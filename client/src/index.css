@@ -1,0 +1,15 @@
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap");
+
+@import "tailwindcss";
+* {
+  font-family: "Outfit", sans-serif;
+}
+
+@theme {
+  /* Brand colors from business card */
+  --color-primary: #C9A24B;        /* Gold */
+  --color-primary-600: #9E7C2D;    /* Deeper gold for hovers */
+  --color-text: #2B2B2B;           /* Title text */
+  --color-muted: #6B7280;          /* Body text gray */
+  --color-silver: #C9CDD3;         /* Secondary accent */
+}
