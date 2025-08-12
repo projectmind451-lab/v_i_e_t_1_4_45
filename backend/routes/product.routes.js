@@ -6,6 +6,7 @@ import {
   getProductById,
   getProducts,
   updateProduct,
+  deleteProduct,
 } from "../controller/product.controller.js";
 import { upload } from "../config/multer.js";
 import Product from "../models/product.model.js";
@@ -31,6 +32,9 @@ router.put(
   upload.array("image", 4),
   updateProduct
 );
+
+// Delete product
+router.delete("/:id", authSeller, deleteProduct);
 
 export default router;
 

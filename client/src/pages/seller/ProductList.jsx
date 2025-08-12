@@ -99,7 +99,19 @@ const ProductList = () => {
       {products.map((product) => (
         <div key={product._id} className="bg-white border border-gray-200 rounded-md p-3 flex gap-3">
           <div className="border border-gray-300 rounded p-1.5 shrink-0">
-            <img src={`http://localhost:5000/images/${product.image[0]}`} alt="Product" className="w-16 h-16 object-cover rounded" />
+            {(() => {
+              const img0 = product?.image?.[0];
+              const src = img0
+                ? (img0.startsWith("http") ? img0 : `/images/${img0}`)
+                : null;
+              return (
+                <img
+                  src={src || "/src/assets/upload_area.png"}
+                  alt="Product"
+                  className="w-16 h-16 object-cover rounded"
+                />
+              );
+            })()}
           </div>
           <div className="flex-1 min-w-0">
             {editingProduct === product._id ? (
@@ -193,11 +205,19 @@ const ProductList = () => {
                 <td className="px-3 md:px-4 py-3">
                   <div className="flex items-center gap-3 min-w-0">
                     <div className="border border-gray-300 rounded p-1.5 md:p-2 shrink-0">
-                      <img
-                        src={`http://localhost:5000/images/${product.image[0]}`}
-                        alt="Product"
-                        className="w-12 md:w-16 h-auto"
-                      />
+                      {(() => {
+                        const img0 = product?.image?.[0];
+                        const src = img0
+                          ? (img0.startsWith("http") ? img0 : `/images/${img0}`)
+                          : null;
+                        return (
+                          <img
+                            src={src || "/src/assets/upload_area.png"}
+                            alt="Product"
+                            className="w-12 md:w-16 h-auto object-cover rounded"
+                          />
+                        );
+                      })()}
                     </div>
                     <div className="min-w-0 flex-1">
                       {editingProduct === product._id ? (

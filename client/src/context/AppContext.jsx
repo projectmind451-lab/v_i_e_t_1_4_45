@@ -34,14 +34,18 @@ export const AppContextProvider = ({ children }) => {
   const fetchUser = async () => {
     try {
       const { data } = await axios.get("/api/user/is-auth");
-      if (data.success) {
+      if (data?.success) {
         setUser(data.user);
-        setCartItems(data.user.cart);
+        setCartItems(data.user?.cart || {});
       } else {
-        toast.error(data.message);
+        // Not logged in: silently set guest state
+        setUser(null);
+        setCartItems({});
       }
     } catch (error) {
-      toast.error(error.message);
+      // Network or server error: treat as guest without noisy toasts
+      setUser(null);
+      setCartItems({});
     }
   };
 

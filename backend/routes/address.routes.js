@@ -10,6 +10,6 @@ router.post("/", (req, res) => {
     // Save to DB here if needed...
     res.status(201).json({ message: "Address saved successfully" });
   });
-router.post("/add", authUser, addAddress);
-router.get("/get", authUser, getAddress);
+router.post("/add", addAddress);
+router.get("/get", getAddress);
 export default router;

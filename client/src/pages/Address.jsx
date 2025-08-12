@@ -121,13 +121,14 @@ export default function Address() {
         phone: address.phone,
       };
 
-      // Save to backend
-      await axios.post("/api/address", newAddress);
+      // Save to backend (authenticated endpoint)
+      const { data } = await axios.post("/api/address/add", { address: newAddress });
 
-      // Update context instantly
-      Object.entries(newAddress).forEach(([key, value]) => {
-        updateAddress(key, value);
-      });
+      // Update context instantly with returned _id as well
+      if (data?.success && data?.address?._id) {
+        updateAddress("_id", data.address._id);
+      }
+      Object.entries(newAddress).forEach(([key, value]) => updateAddress(key, value));
 
       // Navigate to cart
       navigate("/cart");

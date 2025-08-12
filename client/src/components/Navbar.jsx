@@ -38,19 +38,19 @@ const Navbar = () => {
             <img
               src={vinitamartLogo}
               alt="vinitamart logo"
-              className="h-8 md:h-10 lg:h-12 w-auto object-contain"
+              className="h-10 md:h-12 lg:h-16 w-auto object-contain"
               loading="eager"
             />
           </Link>
-
-          {/* Desktop Nav */}
-          <nav className="hidden md:flex gap-6 text-sm font-medium ml-6">
-            <Link to="/" className={`${isActive("/") ? "text-primary border-b-2 border-primary" : "text-gray-700 hover:text-primary"} pb-1`}>Home</Link>
-            <Link to="/products" className={`${isActive("/products") ? "text-primary border-b-2 border-primary" : "text-gray-700 hover:text-primary"} pb-1`}>Products</Link>
-            <Link to="/about" className={`${isActive("/about") ? "text-primary border-b-2 border-primary" : "text-gray-700 hover:text-primary"} pb-1`}>About</Link>
-            <Link to="/contact" className={`${isActive("/contact") ? "text-primary border-b-2 border-primary" : "text-gray-700 hover:text-primary"} pb-1`}>Contact</Link>
-          </nav>
         </div>
+
+        {/* Desktop Nav - centered */}
+        <nav className="hidden md:flex gap-6 text-sm font-medium flex-1 justify-center">
+          <Link to="/" className={`${isActive("/") ? "text-primary border-b-2 border-primary" : "text-gray-700 hover:text-primary"} pb-1`}>Home</Link>
+          <Link to="/products" className={`${isActive("/products") ? "text-primary border-b-2 border-primary" : "text-gray-700 hover:text-primary"} pb-1`}>Products</Link>
+          <Link to="/about" className={`${isActive("/about") ? "text-primary border-b-2 border-primary" : "text-gray-700 hover:text-primary"} pb-1`}>About</Link>
+          <Link to="/contact" className={`${isActive("/contact") ? "text-primary border-b-2 border-primary" : "text-gray-700 hover:text-primary"} pb-1`}>Contact</Link>
+        </nav>
 
         {/* Search Bar (only Home & Products) */}
         {showSearch && (

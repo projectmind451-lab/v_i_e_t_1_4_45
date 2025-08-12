@@ -144,7 +144,7 @@ const Orders = () => {
                   {order.isPaid ? "✅ Paid" : "❌ Pending"}
                 </td>
                 <td className="p-2 border">
-                  {new Date(order.orderDate).toLocaleDateString()}
+                  {new Date(order.createdAt).toLocaleDateString()}
                 </td>
                 <td className="p-2 border">{order.status || "Pending"}</td>
                 <td className="p-2 border">

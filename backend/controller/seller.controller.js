@@ -3,17 +3,27 @@ import jwt from "jsonwebtoken";
 export const sellerLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
-    if (
-      password === process.env.SELLER_PASSWORD &&
-      email === process.env.SELLER_EMAIL
-    ) {
+
+    const envEmail = (process.env.SELLER_EMAIL || "").trim().toLowerCase();
+    const envPassword = process.env.SELLER_PASSWORD || "";
+
+    if (!envEmail || !envPassword) {
+      return res
+        .status(500)
+        .json({ message: "Seller credentials not configured", success: false });
+    }
+
+    const inEmail = (email || "").trim().toLowerCase();
+    const inPassword = password || "";
+
+    if (inPassword === envPassword && inEmail === envEmail) {
       const token = jwt.sign({ email }, process.env.JWT_SECRET, {
         expiresIn: "7d",
       });
       res.cookie("sellerToken", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: process.env.NODE_ENV === "production" ? "none" : "Strict",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
         maxAge: 7 * 24 * 60 * 60 * 1000,
       });
       return res
@@ -33,9 +43,18 @@ export const sellerLogin = async (req, res) => {
 // check seller auth  : /api/seller/is-auth
 export const checkAuth = async (req, res) => {
   try {
-    res.status(200).json({
-      success: true,
-    });
+    const token = req.cookies?.sellerToken;
+    if (!token) return res.status(200).json({ success: false });
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      // Optionally ensure email matches configured seller in env
+      if (decoded?.email !== process.env.SELLER_EMAIL) {
+        return res.status(200).json({ success: false });
+      }
+      return res.status(200).json({ success: true });
+    } catch (err) {
+      return res.status(200).json({ success: false });
+    }
   } catch (error) {
     console.error("Error in checkAuth:", error);
     res.status(500).json({ message: "Internal server error" });
@@ -47,7 +66,7 @@ export const sellerLogout = async (req, res) => {
     res.clearCookie("sellerToken", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "Strict",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     });
     return res.status(200).json({
       message: "Logged out successfully",

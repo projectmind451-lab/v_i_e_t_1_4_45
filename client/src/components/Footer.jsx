@@ -51,27 +51,6 @@ const Footer = () => {
           </ul>
         </div>
 
-        <div>
-          <p className="text-lg text-gray-800">SUPPORT</p>
-          <ul className="mt-3 flex flex-col gap-2 text-sm">
-            <li>
-              <a href="mailto:support@vinitamart.com">Help Center</a>
-            </li>
-            <li>
-              <span>Mon–Sun: 8:00–22:00</span>
-            </li>
-            <li>
-              <span>Hotline: +84 90 123 4567</span>
-            </li>
-            <li>
-              <Link to="/contact">Contact Us</Link>
-            </li>
-            <li>
-              <span>Returns & Refunds</span>
-            </li>
-          </ul>
-        </div>
-
         {/* Company contact from business card */}
         <div className="max-w-80">
           <p className="text-lg text-gray-800">VINITA TRADING AND SERVICES COMPANY LIMITED</p>

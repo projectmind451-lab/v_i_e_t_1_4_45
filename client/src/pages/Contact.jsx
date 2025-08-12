@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Scanner from "../assets/Scanner.jpeg";
 
 export default function Contact() {
   const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
@@ -35,7 +36,7 @@ export default function Contact() {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75v10.5A2.25 2.25 0 004.5 19.5h15a2.25 2.25 0 002.25-2.25V6.75M2.25 6.75A2.25 2.25 0 014.5 4.5h15a2.25 2.25 0 012.25 2.25M2.25 6.75l9.72 7.29c.42.32 1.02.32 1.44 0l9.81-7.29" />
                 </svg>
               </span>
-              <span className="text-base">support@vinitamart.com</span>
+              <span className="text-base">raja@vnitagroup.com</span>
             </div>
             <div className="flex items-center gap-3">
               <span className="text-indigo-500 text-2xl">
@@ -43,7 +44,7 @@ export default function Contact() {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75v10.5A2.25 2.25 0 004.5 19.5h15a2.25 2.25 0 002.25-2.25V6.75M2.25 6.75A2.25 2.25 0 014.5 4.5h15a2.25 2.25 0 012.25 2.25M2.25 6.75l9.72 7.29c.42.32 1.02.32 1.44 0l9.81-7.29" />
                 </svg>
               </span>
-              <span className="text-base">+84 90 123 4567</span>
+              <span className="text-base">+84 975473459</span>
             </div>
             <div className="flex items-center gap-3">
               <span className="text-indigo-500 text-2xl">
@@ -52,12 +53,21 @@ export default function Contact() {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 15.75v2.25" />
                 </svg>
               </span>
-              <span className="text-base">Ho Chi Minh City, Vietnam</span>
+              <span className="text-base">No. 15B, Lane 729, Bat Khoi Street, Cu Khoi Ward, Long Bien District, Hanoi City, Vietnam</span>
             </div>
             <div className="flex items-center gap-3">
               <span className="text-emerald-600 text-2xl">🕒</span>
               <span className="text-base">Support Hours: Mon–Sun, 8:00–22:00</span>
             </div>
+          </div>
+          {/* Scanner / QR or contact image */}
+          <div className="w-full">
+            <img
+              src={Scanner}
+              alt="Scan or save our contact"
+              className="w-full max-w-sm rounded-2xl shadow-md border border-gray-200"
+            />
+            <p className="text-xs text-gray-500 mt-2">Scan/save this image for quick contact.</p>
           </div>
         </div>
         {/* Contact Form */}

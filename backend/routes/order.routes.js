@@ -1,8 +1,30 @@
 import express from "express";
 import { authSeller } from "../middlewares/authSeller.js";
+import authUser from "../middlewares/authUser.js";
 import Order from "../models/order.model.js";
+import {
+  placeOrderCOD,
+  placeOrderStripe,
+  getUserOrders,
+  getAllOrders,
+  cancelOrder,
+  updateOrderStatus,
+} from "../controller/order.controller.js";
 
 const router = express.Router();
+
+// PUBLIC USER ENDPOINTS
+// Place order - Cash on Delivery
+router.post("/cod", placeOrderCOD);
+
+// Place order - Stripe Checkout
+router.post("/stripe", authUser, placeOrderStripe);
+
+// Get current user's orders
+router.get("/user", authUser, getUserOrders);
+
+// Cancel an order (user)
+router.put("/cancel/:orderId", authUser, cancelOrder);
 
 // GET all orders for seller with pagination, search, and filter
 router.get("/seller", authSeller, async (req, res) => {
@@ -27,8 +49,8 @@ router.get("/seller", authSeller, async (req, res) => {
 
     const total = await Order.countDocuments(query);
     const orders = await Order.find(query)
-      .populate("items.product")
-      .sort({ orderDate: -1 })
+      .populate("items.product address")
+      .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(Number(limit));
 
@@ -44,28 +66,11 @@ router.get("/seller", authSeller, async (req, res) => {
   }
 });
 
-// UPDATE order status
-router.put("/:orderId/status", authSeller, async (req, res) => {
-  try {
-    const { orderId } = req.params;
-    const { status } = req.body;
+// UPDATE order status (sends email notification)
+router.put("/:orderId/status", authSeller, updateOrderStatus);
 
-    const order = await Order.findByIdAndUpdate(
-      orderId,
-      { status },
-      { new: true }
-    );
-
-    if (!order)
-      return res
-        .status(404)
-        .json({ success: false, message: "Order not found" });
-
-    res.json({ success: true, order });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
-  }
-});
+// Admin/Seller: Get all orders
+router.get("/all", authSeller, getAllOrders);
 
 export default router;
 

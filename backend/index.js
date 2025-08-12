@@ -6,6 +6,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import bodyParser from "body-parser";
 import { connectDB } from "./config/connectDB.js";
+import fs from "fs";
 dotenv.config();
 import userRoutes from "./routes/user.routes.js";
 import sellerRoutes from "./routes/seller.routes.js";
@@ -71,6 +72,12 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+// Verify SMTP connection on startup (dev aid)
+transporter
+  .verify()
+  .then(() => console.log("SMTP transporter verified and ready"))
+  .catch((err) => console.error("SMTP transporter verification failed:", err.message));
+
 
 // OTP email routes
 app.post("/api/send-email-otp", async (req, res) => {
@@ -81,11 +88,83 @@ app.post("/api/send-email-otp", async (req, res) => {
   setOtp(email, otp);
 
   try {
+    // Basic env validation to avoid silent 500s
+    const requiredEnv = ["SMTP_HOST", "SMTP_PORT", "SMTP_USER", "SMTP_PASS"];
+    const missing = requiredEnv.filter((k) => !process.env[k]);
+    if (missing.length) {
+      console.error("Missing SMTP env vars:", missing.join(", "));
+      return res.status(500).json({ message: "Email service not configured" });
+    }
+    const brandName = process.env.BRAND_NAME || "Vinitamart";
+    const logoUrl = process.env.LOGO_URL || "";
+    const subject = `${brandName} OTP: ${otp}`;
+    const text = `Use the following One-Time Password (OTP) to continue: ${otp}\n\nThis code will expire in 5 minutes. If you did not request this, please ignore this email.`;
+    // Build logo header (supports http(s) URL or local path via CID)
+    let headerLogoHtml = "";
+    let attachments = [];
+    if (logoUrl) {
+      const isHttp = /^https?:\/\//i.test(logoUrl);
+      if (isHttp) {
+        headerLogoHtml = `<img src="${logoUrl}" alt="${brandName}" style="height:28px; width:auto; display:block; border-radius:4px; background:#ffffff; padding:2px;"/>`;
+      } else {
+        // try to resolve relative/local paths
+        const candidates = [
+          logoUrl,
+          path.resolve(process.cwd(), logoUrl),
+          path.resolve(__dirname, logoUrl),
+          path.resolve(__dirname, "src", logoUrl.replace(/^\.\//, "")),
+          path.resolve(__dirname, "..", "client", logoUrl.replace(/^\.\//, "")),
+          path.resolve(__dirname, "..", logoUrl),
+        ];
+        const existingPath = candidates.find((p) => {
+          try { return fs.existsSync(p); } catch { return false; }
+        });
+        if (existingPath) {
+          const cid = "brandLogoOtp";
+          headerLogoHtml = `<img src=\"cid:${cid}\" alt=\"${brandName}\" style=\"height:28px; width:auto; display:block; border-radius:4px; background:#ffffff; padding:2px;\"/>`;
+          attachments.push({ filename: existingPath.split(/[\\/]/).pop() || "logo.png", path: existingPath, cid });
+        }
+      }
+    }
+
+    const html = `
+      <div style="font-family: Arial, Helvetica, sans-serif; background:#f6f7f9; padding:24px;">
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:560px;margin:0 auto;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb;">
+          <tr>
+            <td style="padding:20px 24px; background:#0ea5e9; color:#ffffff;">
+              <div style="display:flex; align-items:center; gap:12px;">
+                ${headerLogoHtml}
+                <h1 style="margin:0;font-size:18px;">${brandName} Verification</h1>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:24px; color:#111827;">
+              <p style="margin:0 0 8px 0; font-size:16px;">Your One-Time Password (OTP) is</p>
+              <div style="margin:12px 0 16px 0;">
+                <div style="display:inline-block; font-size:28px; letter-spacing:6px; font-weight:700; color:#111827; background:#f3f4f6; border:1px dashed #d1d5db; padding:12px 16px; border-radius:10px;">
+                  ${otp}
+                </div>
+              </div>
+              <p style="margin:0 0 6px 0; color:#374151;">This code will expire in <strong>5 minutes</strong>.</p>
+              <p style="margin:0; color:#6b7280; font-size:14px;">If you did not request this, you can safely ignore this email.</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:16px 24px; background:#f9fafb; color:#6b7280; font-size:12px; text-align:center;">
+              <p style="margin:0;">${brandName} • This is an automated message, please do not reply.</p>
+            </td>
+          </tr>
+        </table>
+      </div>`;
+
     await transporter.sendMail({
-      from: `"OTP Service" <${process.env.SMTP_USER}>`,
+      from: `Vinitamart <${process.env.SMTP_USER}>`,
       to: email,
-      subject: "Your OTP Code",
-      text: `Your OTP code is: ${otp}`,
+      subject,
+      text,
+      html,
+      attachments,
     });
     res.json({ message: "OTP sent to email" });
   } catch (err) {

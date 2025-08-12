@@ -61,8 +61,8 @@ const Cart = () => {
   // Place order
   const placeOrder = async () => {
     try {
-      if (!selectedAddress) {
-        return toast.error("Please select an address");
+      if (!selectedAddress || !selectedAddress._id) {
+        return toast.error("Please add and select a saved address");
       }
 
       const orderPayload = {
@@ -70,7 +70,7 @@ const Cart = () => {
           product: item._id,
           quantity: item.quantity,
         })),
-        address: selectedAddress._id || selectedAddress, // depends on how you store it
+        address: selectedAddress._id,
       };
 
       if (paymentOption === "COD") {
@@ -141,7 +141,7 @@ const Cart = () => {
                       onChange={(e) =>
                         updateCartItem(product._id, Number(e.target.value))
                       }
-                      value={cartItems[product._id]}
+                      value={cartItems[product._id] ?? 1}
                       className="outline-none"
                     >
                       {Array(

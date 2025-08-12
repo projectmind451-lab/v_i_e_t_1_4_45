@@ -33,7 +33,7 @@ export const registerUser = async (req, res) => {
     res.cookie("token", token, {
       httpOnly: true, // Prevents client-side JavaScript from accessing the cookie
       secure: process.env.NODE_ENV === "production", // Use secure cookies in production
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "Strict", // Prevent CSRF attacks
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // Allow cross-origin in dev
       maxAge: 7 * 24 * 60 * 60 * 1000, // Cookie expiration time (7 days)
     });
     res.status(201).json({
@@ -81,7 +81,7 @@ export const loginUser = async (req, res) => {
     res.cookie("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "Strict",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
     res.status(200).json({
@@ -101,18 +101,20 @@ export const loginUser = async (req, res) => {
 // check auth : /api/user/is-auth
 export const checkAuth = async (req, res) => {
   try {
-    const userId = req.user;
-
-    const user = await User.findById(userId).select("-password");
-    if (!user) {
-      return res
-        .status(404)
-        .json({ message: "User not found", success: false });
+    const token = req.cookies?.token;
+    if (!token) {
+      return res.status(200).json({ success: false, user: null });
     }
-    res.status(200).json({
-      success: true,
-      user,
-    });
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const user = await User.findById(decoded.id).select("-password");
+      if (!user) {
+        return res.status(200).json({ success: false, user: null });
+      }
+      return res.status(200).json({ success: true, user });
+    } catch (err) {
+      return res.status(200).json({ success: false, user: null });
+    }
   } catch (error) {
     console.error("Error in checkAuth:", error);
     res.status(500).json({ message: "Internal server error" });
@@ -124,7 +126,7 @@ export const logout = async (req, res) => {
     res.clearCookie("token", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "Strict",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     });
     return res.status(200).json({
       message: "Logged out successfully",
