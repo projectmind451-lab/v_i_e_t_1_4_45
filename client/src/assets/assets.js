@@ -1,4 +1,4 @@
-// Import all images from the images directory
+// Import all images from the images directory with consistent naming
 import logo from "./images/logo.png";
 import search_icon from "./images/search_icon.svg";
 import remove_icon from "./images/remove_icon.svg";
@@ -122,20 +122,6 @@ import turmeric from "./images/Turmeri_Powder.png";
 import turmericpowder from "./images/TurmericPower.jpeg";
 import vinita_mart from "./images/vinita_mart.jpeg";
 import vinita_groundnut from "./images/VinitaGroundnutoil.jpeg";
-import home11 from "./images/home11.png";
-import home12 from "./images/home12.jpg";
-import home13 from "./images/home13.jpg";
-import home14 from "./images/home14.jpg";
-import rasins from "./images/rasins_.png";
-
-// Importing with consistent naming
-import AmulPureGhee from "./images/AmulPureGhee.jpeg";
-import Appalam from "./images/Appalam_cat.png";
-import Briyani_Masala from "./images/Biryani_Masala.png";
-import channadal from "./images/Channa_Dal.jpeg";
-import coriander from "./images/Coriander_Powder.png";
-import cumin from "./images/Cumin_Powder.png";
-import fishfry from "./images/Fish_Fry_Masala.png";
 import home1 from "./images/home1.jpeg";
 import home2 from "./images/home2.jpeg";
 import home3 from "./images/home3.jpeg";
@@ -144,28 +130,33 @@ import home5 from "./images/home5.png";
 import home6 from "./images/home6_cat.png";
 import home7 from "./images/home7_cat.png";
 import home8 from "./images/home8.jpeg";
-import idlyrice from "./images/IdlyRice.jpeg";
-import kabulichanna from "./images/Kabuli_Channa_cat.png";
-import kashmir from "./images/Kashmiri_Chilli_Powder.png";
-import kulambumasala from "./images/Kulambu_Masala.png";
-import kulambu_masala_bottle from "./images/KulambuChilliMasala.jpeg";
-import PonniRawRice from "./images/PonniRawRice_cat.png";
-import PonniRice from "./images/PonniRice.jpeg";
-import Rasampowder from "./images/Rasam_Powder.png";
-import redchilli from "./images/Red_chilli_powder.png";
-import redChilliPower from "./images/RedChilliPower.jpeg";
-import roastedgram from "./images/Roasted_Gram.jpeg";
-import sambar from "./images/Sambar_Powder.png";
-import sesameoil from "./images/SesameOil.jpeg";
-import turmeric from "./images/Turmeri_Powder.png";
-import turmericpowder from "./images/TurmericPower.jpeg";
-import vinita_mart from "./images/vinita_mart.jpeg";
-import vinita_groundnut from "./images/VinitaGroundnutoil.jpeg";
 import home11 from "./images/home11.png";
 import home12 from "./images/home12.jpg";
 import home13 from "./images/home13.jpg";
 import home14 from "./images/home14.jpg";
 import rasins from "./images/rasins_.png";
+
+// Re-export with different names for backward compatibility
+export const AmulPureGhee = amul_milk_image;
+export const Appalam = appalam_image;
+export const Briyani_Masala = briyani_masala_image;
+export const channadal = channa_dal_image;
+export const coriander = coriander_powder;
+export const cumin = cumin_powder;
+export const fishfry = fish_fry_masala;
+export const idlyrice = idly_rice;
+export const kabulichanna = kabuli_channa_cat;
+export const kashmir = kashmiri_chilli_powder;
+export const kulambumasala = kulambu_masala;
+export const kulambu_masala_bottle = kulambu_chilli_masala;
+export const PonniRawRice = ponni_raw_rice_cat;
+export const PonniRice = ponni_raw_rice;
+export const Rasampowder = rasam_powder;
+export const redchilli = red_chilli_powder;
+export const redChilliPower = red_chilli_powder;
+export const roastedgram = roasted_gram;
+export const sambar = sambar_powder;
+export const sesameoil = sesame_oil;
 
 export { home5, home11, home12, home13, home14 };
 export const assets = {
