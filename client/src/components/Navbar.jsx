@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { assets } from "../assets/assets";
+import { assets } from "../assets/images/assets";
 import vinitamartLogo from "../assets/vinitamart_logo.png";
 import { useAppContext } from "../context/AppContext";
 
