@@ -264,38 +264,83 @@ export const cancelOrder = async (req, res) => {
 // seller: update order status and notify customer via email
 export const updateOrderStatus = async (req, res) => {
   try {
-    const { orderId } = req.params;
     const { status } = req.body;
-
-    if (!status || typeof status !== "string") {
-      return res.status(400).json({ success: false, message: "Invalid status" });
-    }
+    const { orderId } = req.params;
 
     const order = await Order.findById(orderId);
     if (!order) {
-      return res.status(404).json({ success: false, message: "Order not found" });
+      return res.status(404).json({ message: "Order not found", success: false });
     }
+
+    // Check if the order belongs to the seller
+    // Note: This assumes the order has a seller reference. Adjust according to your schema.
+    // if (String(order.seller) !== String(req.user._id)) {
+    //   return res.status(403).json({ message: "Not authorized", success: false });
+    // }
 
     order.status = status;
     await order.save();
 
-    // Email notification (best-effort)
-    try {
-      const addr = await Address.findById(order.address);
-      if (addr?.email) {
+    // Get the address to get the customer's email
+    const address = await Address.findById(order.address);
+    
+    // Send email notification to customer if we have their email
+    if (address && address.email) {
+      try {
         await sendOrderUpdate({
-          to: addr.email,
+          to: address.email,
           orderId: order._id.toString(),
-          status,
-          name: `${addr.firstName || ""} ${addr.lastName || ""}`.trim(),
+          status: status,
+          name: `${address.firstName || ''} ${address.lastName || ''}`.trim() || 'Customer'
         });
+        console.log(`Order status update email sent to ${address.email}`);
+      } catch (error) {
+        console.error('Failed to send order status update email:', error);
+        // Don't fail the request if email sending fails
       }
-    } catch (e) {
-      console.error("Failed to send order status email:", e.message);
+    } else {
+      console.log('No email address found for order notification');
     }
 
-    return res.json({ success: true, order });
-  } catch (err) {
-    return res.status(500).json({ success: false, message: err.message });
+    res.status(200).json({
+      message: "Order status updated successfully",
+      success: true,
+      order,
+    });
+  } catch (error) {
+    console.error("Error updating order status:", error);
+    res.status(500).json({ message: error.message, success: false });
+  }
+};
+
+// Update payment status: /api/order/:orderId/payment
+export const updatePaymentStatus = async (req, res) => {
+  try {
+    const { isPaid } = req.body;
+    const { orderId } = req.params;
+
+    const order = await Order.findById(orderId);
+    if (!order) {
+      return res.status(404).json({ message: "Order not found", success: false });
+    }
+
+    // Update payment status
+    order.isPaid = isPaid;
+    
+    // If marking as paid, set payment date to now
+    if (isPaid && !order.paidAt) {
+      order.paidAt = new Date();
+    }
+    
+    await order.save();
+
+    res.status(200).json({
+      message: `Payment status updated to ${isPaid ? 'Paid' : 'Pending'}`,
+      success: true,
+      order,
+    });
+  } catch (error) {
+    console.error("Error updating payment status:", error);
+    res.status(500).json({ message: error.message, success: false });
   }
 };

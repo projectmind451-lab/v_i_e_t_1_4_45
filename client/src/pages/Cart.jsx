@@ -213,13 +213,24 @@ const Cart = () => {
         {/* Payment Options */}
         <p className="text-sm font-medium uppercase mt-6">Payment Method</p>
         <select
-          onChange={(e) => setPaymentOption(e.target.value)}
+          onChange={(e) => {
+            if (e.target.value === 'Online') {
+              toast.error('Online payment is currently unavailable. Please choose another payment method.');
+              return;
+            }
+            setPaymentOption(e.target.value);
+          }}
           className="w-full border border-gray-300 bg-white px-3 py-2 mt-2 outline-none"
           value={paymentOption}
         >
           <option value="COD">Cash On Delivery</option>
-          <option value="Online">Online Payment</option>
+          <option value="Online" disabled style={{ color: '#9CA3AF' }}>Online Payment (Temporarily Unavailable)</option>
         </select>
+        {paymentOption === 'Online' && (
+          <p className="text-xs text-red-500 mt-1">
+            Online payment is currently unavailable. Please select another payment method.
+          </p>
+        )}
 
         <hr className="border-gray-300 mt-4" />
 

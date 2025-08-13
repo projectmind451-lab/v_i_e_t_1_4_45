@@ -1,0 +1,14 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+
+Sitemap: https://vinitamart.com/sitemap.xml
+
+# Disallow admin and private pages
+Disallow: /admin/
+Disallow: /account/
+Disallow: /checkout/
+Disallow: /api/
+
+# Crawl-delay: 10
+# Uncomment the above line if you want to limit crawl rate

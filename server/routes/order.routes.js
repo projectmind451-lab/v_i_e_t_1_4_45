@@ -9,6 +9,7 @@ import {
   getAllOrders,
   cancelOrder,
   updateOrderStatus,
+  updatePaymentStatus,
 } from "../controller/order.controller.js";
 
 const router = express.Router();
@@ -69,8 +70,10 @@ router.get("/seller", authSeller, async (req, res) => {
 // UPDATE order status (sends email notification)
 router.put("/:orderId/status", authSeller, updateOrderStatus);
 
+// Update payment status (seller)
+router.put("/:orderId/payment", authSeller, updatePaymentStatus);
+
 // Admin/Seller: Get all orders
 router.get("/all", authSeller, getAllOrders);
 
 export default router;
-
