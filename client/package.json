@@ -5,11 +5,12 @@
   "type": "module",
   "homepage": ".",
   "scripts": {
-    "start": "vite preview --port 3000 --host",
     "dev": "vite",
-    "build": "vite build",
-    "lint": "eslint .",
-    "preview": "vite preview",
+    "build": "vite build --base=./",
+    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview --port 3000",
+    "start": "vite preview --port 3000 --host",
+    "format": "prettier --write .",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
