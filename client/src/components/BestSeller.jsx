@@ -1,5 +1,5 @@
 import ProductCard from "./ProductCard";
-import { useAppContext } from "../context/appContext";
+import { useAppContext } from "../context/AppContext";
 
 const BestSeller = () => {
   const { products, searchQuery } = useAppContext();
@@ -39,7 +39,7 @@ export default BestSeller;
 
 // import { useState } from "react";
   // import ProductCard from "./ProductCard";
-  // import { useAppContext } from "../context/appContext";
+  // import { useAppContext } from "../context/AppContext";
   // const BestSeller = () => {
   //   const { products } = useAppContext();
   //   return (
@@ -80,7 +80,7 @@ export default BestSeller;
 
 // import { useState } from "react";
 // import ProductCard from "./ProductCard";
-// import { useAppContext } from "../context/appContext";
+// import { useAppContext } from "../context/AppContext";
 // const BestSeller = () => {
 //   const { products } = useAppContext();
 //   return (
