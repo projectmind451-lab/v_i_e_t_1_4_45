@@ -15,6 +15,7 @@ export const AppContextProvider = ({ children }) => {
   const [products, setProducts] = useState([]);
   const [cartItems, setCartItems] = useState({});
   const [searchQuery, setSearchQuery] = useState("");
+  const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
 
   // check seller status
   const fetchSeller = async () => {
@@ -139,8 +140,6 @@ export const AppContextProvider = ({ children }) => {
       updateCart();
     }
   }, [cartItems]);
-
-  const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
 
   const value = {
     navigate,
