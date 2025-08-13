@@ -6,6 +6,7 @@ import { formatVND } from "../utils/currency";
 import ProductCard from "../components/ProductCard";
 import SEO from "../components/SEO";
 import { generateProductStructuredData } from "../utils/structuredData";
+import { getImageUrl } from "../utils/config";
 const SingleProduct = () => {
   const { products, navigate, addToCart } = useAppContext();
   const { id, category } = useParams();
@@ -93,7 +94,7 @@ const SingleProduct = () => {
                 className="border max-w-24 border-gray-500/30 rounded overflow-hidden cursor-pointer"
               >
                 <img
-                  src={`${backendUrl}/images/${image}`}
+                  src={getImageUrl(image)}
                   alt={`Thumbnail ${index + 1}`}
                   className="w-full h-full object-cover"
                 />
@@ -103,7 +104,7 @@ const SingleProduct = () => {
 
           <div className="border border-gray-500/30 max-w-100 rounded overflow-hidden">
             <img
-              src={`${backendUrl}/images/${thumbnail || product.images?.[0]}`}
+              src={getImageUrl(thumbnail || product.images?.[0])}
               alt={product.name}
               className="w-full h-full object-cover"
             />
@@ -274,7 +275,7 @@ export default SingleProduct;
 //                   className="border max-w-24 border-gray-500/30 rounded overflow-hidden cursor-pointer"
 //                 >
 //                   <img
-//                     src={`${backendUrl}/images/${image}`}
+//                     src={getImageUrl(image)}
 //                     alt={`Thumbnail ${index + 1}`}
 //                   />
 //                 </div>

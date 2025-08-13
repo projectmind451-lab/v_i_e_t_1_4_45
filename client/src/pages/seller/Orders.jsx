@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { AppContext } from "../../context/AppContext";
 import toast from "react-hot-toast";
 import { formatVND } from "../../utils/currency";
+import { getImageUrl } from "../../utils/config";
 
 const Orders = () => {
   const { axios, backendUrl } = useContext(AppContext);
@@ -152,7 +153,7 @@ const Orders = () => {
                           <img
                             src={
                               item.product?.image?.[0]
-                                ? `${backendUrl}/images/${item.product.image[0]}`
+                                ? getImageUrl(item.product.image[0])
                                 : "/no-image.png"
                             }
                             alt="product"

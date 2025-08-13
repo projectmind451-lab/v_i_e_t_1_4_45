@@ -1,6 +1,7 @@
 import { assets } from "../assets/assets";
 import { useAppContext } from "../context/AppContext";
 import { formatVND } from "../utils/currency";
+import { getImageUrl } from "../utils/config";
 
 const ProductCard = ({ product }) => {
   const { addToCart, removeFromCart, cartItems, navigate } = useAppContext();
@@ -21,7 +22,7 @@ const ProductCard = ({ product }) => {
       <div className="flex items-center justify-center h-40 sm:h-44 md:h-48 mb-4 overflow-hidden">
         <img
           className="h-full w-auto object-contain transition-transform duration-300 group-hover:scale-105"
-          src={`${backendUrl}/images/${product.image[0]}`}
+          src={getImageUrl(product.image[0])}
           alt={product.name}
         />
       </div>

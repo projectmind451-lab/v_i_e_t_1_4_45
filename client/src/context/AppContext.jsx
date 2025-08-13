@@ -3,8 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { dummyProducts } from "../assets/assets";
 import toast from "react-hot-toast";
 import axios from "axios";
+import { getBackendUrl } from "../utils/config";
+
+// Set default axios configuration
+const backendUrl = getBackendUrl();
 axios.defaults.withCredentials = true;
-axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
+axios.defaults.baseURL = backendUrl;
 export const AppContext = createContext(null);
 
 export const AppContextProvider = ({ children }) => {
@@ -15,7 +19,6 @@ export const AppContextProvider = ({ children }) => {
   const [products, setProducts] = useState([]);
   const [cartItems, setCartItems] = useState({});
   const [searchQuery, setSearchQuery] = useState("");
-  const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
 
   // check seller status
   const fetchSeller = async () => {
@@ -164,7 +167,6 @@ export const AppContextProvider = ({ children }) => {
     cartCount,
     totalCartAmount,
     axios,
-    backendUrl,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

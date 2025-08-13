@@ -3,6 +3,7 @@ import { useAppContext } from "../context/AppContext";
 import { formatVND } from "../utils/currency";
 import toast from "react-hot-toast";
 import { useAddress } from "../context/AddressContext";
+import { getImageUrl } from "../utils/config";
 
 const Cart = () => {
   const {
@@ -126,7 +127,7 @@ const Cart = () => {
               >
                 <img
                   className="max-w-full h-full object-cover"
-                  src={`${backendUrl}/images/${product.image[0]}`}
+                  src={getImageUrl(product.image[0])}
                   alt={product.name}
                 />
               </div>
