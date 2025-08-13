@@ -1,4 +1,4 @@
-import { assets, categories } from "../../assets/assets";
+import { assets, categories } from "../../assets/images/assets";
 import { useContext, useEffect, useRef, useState } from "react";
 import { AppContext } from "../../context/AppContext";
 import toast from "react-hot-toast";

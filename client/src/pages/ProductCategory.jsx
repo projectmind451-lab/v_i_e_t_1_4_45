@@ -1,4 +1,4 @@
-import { categories } from "../assets/assets";
+import { categories } from "../assets/images/assets";
 import ProductCard from "../components/ProductCard";
 import { useAppContext } from "../context/AppContext";
 import { useParams } from "react-router-dom";

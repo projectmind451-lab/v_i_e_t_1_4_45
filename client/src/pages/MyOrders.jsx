@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { dummyOrders } from "../assets/assets";
+import { dummyOrders } from "../assets/images/assets";
 import { AppContext } from "../context/AppContext";
 import toast from "react-hot-toast";
 import { formatVND } from "../utils/currency";

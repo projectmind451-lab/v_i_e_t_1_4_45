@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAppContext } from "../context/AppContext";
 import { Link, useParams } from "react-router-dom";
-import { assets } from "../assets/assets";
+import { assets } from "../assets/images/assets";
 import { formatVND } from "../utils/currency";
 import ProductCard from "../components/ProductCard";
 import SEO from "../components/SEO";

@@ -1,4 +1,4 @@
-import { categories } from "../assets/assets";
+import { categories } from "../assets/images/assets";
 import { useAppContext } from "../context/AppContext";
 
 const Category = () => {

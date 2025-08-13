@@ -1,4 +1,4 @@
-import { assets } from "../assets/assets";
+import { assets } from "../assets/images/assets";
 import { useAppContext } from "../context/AppContext";
 import { formatVND } from "../utils/currency";
 import { getImageUrl } from "../utils/config";

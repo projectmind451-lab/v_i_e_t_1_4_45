@@ -8,7 +8,7 @@ import "swiper/css/pagination";
 import "swiper/css/navigation";
 import "swiper/css/effect-fade";
 
-import { home5, home11, home12, home13, home14 } from "../assets/assets";
+import { home5, home11, home12, home13, home14 } from "../assets/images/assets";
 
 const bannerCaptions = [
   {
