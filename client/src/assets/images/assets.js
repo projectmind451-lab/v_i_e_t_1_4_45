@@ -70,8 +70,9 @@ import vanilla_muffins_image from "./vanilla_muffins_image.png";
 import quinoa_image from "./quinoa_image.png";
 import brown_rice_image from "./brown_rice_image.png";
 import barley_image from "./barley_image.png";
-import black_channa from "./Black_Channa.jpeg";
-import black_channa_cat from "./Black_Channa_cat.png";
+// Using Kabuli Channa as a replacement since Black_Channa files are missing
+import black_channa from "./Kabuli_Channa.jpeg";
+import black_channa_cat from "./Kabuli_Channa_cat.png";
 import black_pepper from "./Black_Pepper.jpeg";
 import black_pepper_cat from "./Black_Pepper_cat.png";
 import black_pepper_powder from "./Black_Pepper_Powder.png";
