@@ -60,6 +60,7 @@ import vanilla_muffins_image from "./vanilla_muffins_image.png";
 import quinoa_image from "./quinoa_image.png";
 import brown_rice_image from "./brown_rice_image.png";
 import barley_image from "./barley_image.png";
+import briyani_masala_image from "./Biryani_Masala.png";
 import appalam_image from "./Appalam.jpeg";
 // Using Kabuli Channa as a replacement since Black_Channa files are missing
 import coriander_powder from "./Coriander_Powder.png";
