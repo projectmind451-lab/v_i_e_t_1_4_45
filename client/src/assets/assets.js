@@ -71,14 +71,15 @@ import quinoa_image from "./quinoa_image.png";
 import brown_rice_image from "./brown_rice_image.png";
 import barley_image from "./barley_image.png";
 
-import Amulpureghee from "./AmulPureGhee_cat.png";
+// Importing with consistent naming
+import AmulPureGhee from "./AmulPureGhee.jpeg";
 import Appalam from "./Appalam_cat.png";
 import Briyani_Masala from "./Biryani_Masala.png";
 import channadal from "./Channa_Dal.jpeg";
 import coriander from "./Coriander_Powder.png";
 import cumin from "./Cumin_Powder.png";
 import fishfry from "./Fish_Fry_Masala.png";
-import home1 from "./home1_cat.png";
+import home1 from "./home1.jpeg";
 import home2 from "./home2.jpeg";
 import home3 from "./home3.jpeg";
 import home4 from "./home4.jpeg";
@@ -95,7 +96,7 @@ import PonniRawRice from "./PonniRawRice_cat.png";
 import PonniRice from "./PonniRice.jpeg";
 import Rasampowder from "./Rasam_Powder.png";
 import redchilli from "./Red_chilli_powder.png";
-import red from "./RedChilliPower.jpeg";
+import redChilliPower from "./RedChilliPower.jpeg";
 import roastedgram from "./Roasted_Gram.jpeg";
 import sambar from "./Sambar_Powder.png";
 import sesameoil from "./SesameOil.jpeg";
@@ -112,7 +113,7 @@ import rasins from "./rasins_.png";
 export { home5, home11, home12, home13, home14 };
 export const assets = {
   logo,
-  Amulpureghee,
+  AmulPureGhee,
   Appalam,
   Briyani_Masala,
   channadal,
@@ -136,7 +137,7 @@ export const assets = {
   PonniRice,
   Rasampowder,
   redchilli,
-  red,
+  redChilliPower,
   roastedgram,
   sambar,
   sesameoil,
