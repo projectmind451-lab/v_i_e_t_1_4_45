@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Scanner from "../assets/images/Scanner.jpeg";
+import Scanner from "../assets/Scanner.jpeg";
 
 export default function Contact() {
   const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });

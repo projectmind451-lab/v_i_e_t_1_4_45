@@ -1,6 +1,6 @@
 import { Link, NavLink, Outlet } from "react-router-dom";
-import { assets } from "../../assets/images/assets";
-import vinitamartLogo from "../../assets/images/vinitamart_logo.png";
+import { assets } from "../../assets/assets";
+import vinitamartLogo from "../../assets/vinitamart_logo.png";
 import { useAppContext } from "../../context/AppContext";
 import toast from "react-hot-toast";
 const SellerLayout = () => {
