@@ -93,7 +93,7 @@ const SingleProduct = () => {
                 className="border max-w-24 border-gray-500/30 rounded overflow-hidden cursor-pointer"
               >
                 <img
-                  src={`http://localhost:5000/images/${image}`}
+                  src={`${backendUrl}/images/${image}`}
                   alt={`Thumbnail ${index + 1}`}
                   className="w-full h-full object-cover"
                 />
@@ -103,7 +103,7 @@ const SingleProduct = () => {
 
           <div className="border border-gray-500/30 max-w-100 rounded overflow-hidden">
             <img
-              src={`http://localhost:5000/images/${thumbnail || product.images?.[0]}`}
+              src={`${backendUrl}/images/${thumbnail || product.images?.[0]}`}
               alt={product.name}
               className="w-full h-full object-cover"
             />
@@ -274,7 +274,7 @@ export default SingleProduct;
 //                   className="border max-w-24 border-gray-500/30 rounded overflow-hidden cursor-pointer"
 //                 >
 //                   <img
-//                     src={`http://localhost:5000/images/${image}`}
+//                     src={`${backendUrl}/images/${image}`}
 //                     alt={`Thumbnail ${index + 1}`}
 //                   />
 //                 </div>

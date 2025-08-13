@@ -139,6 +139,9 @@ export const AppContextProvider = ({ children }) => {
       updateCart();
     }
   }, [cartItems]);
+
+  const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
+
   const value = {
     navigate,
     user,
@@ -148,18 +151,23 @@ export const AppContextProvider = ({ children }) => {
     showUserLogin,
     setShowUserLogin,
     products,
+    setProducts,
     cartItems,
+    setCartItems,
+    searchQuery,
+    setSearchQuery,
+    fetchSeller,
+    fetchUser,
+    fetchProducts,
     addToCart,
     updateCartItem,
     removeFromCart,
-    searchQuery,
-    setSearchQuery,
     cartCount,
     totalCartAmount,
     axios,
-    fetchProducts,
-    setCartItems,
+    backendUrl,
   };
+
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };
 

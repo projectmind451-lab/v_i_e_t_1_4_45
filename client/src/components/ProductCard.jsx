@@ -21,7 +21,7 @@ const ProductCard = ({ product }) => {
       <div className="flex items-center justify-center h-40 sm:h-44 md:h-48 mb-4 overflow-hidden">
         <img
           className="h-full w-auto object-contain transition-transform duration-300 group-hover:scale-105"
-          src={`http://localhost:5000/images/${product.image[0]}`}
+          src={`${backendUrl}/images/${product.image[0]}`}
           alt={product.name}
         />
       </div>
@@ -129,25 +129,6 @@ export default ProductCard;
 //           navigate(
 //             `/product/${product.category.toLowerCase()}/${product?._id}`
 //           );
-//           scrollTo(0, 0);
-//         }}
-//         className="border border-gray-500/20 rounded-md md:px-4 px-3 py-2 bg-white min-w-56 max-w-56 w-full"
-//       >
-//         <div className="group cursor-pointer flex items-center justify-center px-2">
-//           <img
-//             className="group-hover:scale-105 transition max-w-26 md:max-w-36"
-//             src={`http://localhost:5000/images/${product.image[0]}`}
-//             alt={product.name}
-//           />
-//         </div>
-//         <div className="text-gray-500/60 text-sm">
-//           <p>{product.category}</p>
-//           <p className="text-gray-700 font-medium text-lg truncate w-full">
-//             {product.name}
-//           </p>
-//           <div className="flex items-center gap-0.5">
-//             {Array(5)
-//               .fill("")
 //               .map((_, i) => (
 //                 <img
 //                   key={i}

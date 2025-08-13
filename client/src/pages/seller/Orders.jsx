@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 import { formatVND } from "../../utils/currency";
 
 const Orders = () => {
-  const { axios } = useContext(AppContext);
+  const { axios, backendUrl } = useContext(AppContext);
   const [orders, setOrders] = useState([]);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
@@ -152,7 +152,7 @@ const Orders = () => {
                           <img
                             src={
                               item.product?.image?.[0]
-                                ? `http://localhost:5000/images/${item.product.image[0]}`
+                                ? `${backendUrl}/images/${item.product.image[0]}`
                                 : "/no-image.png"
                             }
                             alt="product"

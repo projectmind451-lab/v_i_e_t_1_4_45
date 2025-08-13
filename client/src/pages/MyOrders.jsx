@@ -6,7 +6,7 @@ import { formatVND } from "../utils/currency";
 
 const MyOrders = () => {
   const [myOrders, setMyOrders] = useState([]);
-  const { axios, user } = useContext(AppContext);
+  const { axios, user, backendUrl } = useContext(AppContext);
   const fetchOrders = async () => {
     try {
       const { data } = await axios.get("/api/order/user");
@@ -51,7 +51,7 @@ const MyOrders = () => {
               <div className="flex items-center mb-4 md:mb-0">
                 <div className="p-4 rounded-lg">
                   <img
-                    src={`http://localhost:5000/images/${item.product.image[0]}`}
+                    src={`${backendUrl}/images/${item.product.image[0]}`}
                     alt=""
                     className="w-16 h-16"
                   />

@@ -16,6 +16,7 @@ const Cart = () => {
     updateCartItem,
     axios,
     user,
+    backendUrl,
   } = useAppContext();
 
   // State to store the products in the cart
@@ -125,7 +126,7 @@ const Cart = () => {
               >
                 <img
                   className="max-w-full h-full object-cover"
-                  src={`http://localhost:5000/images/${product.image[0]}`}
+                  src={`${backendUrl}/images/${product.image[0]}`}
                   alt={product.name}
                 />
               </div>
