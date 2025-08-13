@@ -19,34 +19,39 @@ import { connectCloudinary } from "./config/cloudinary.js";
 
 const app = express();
 
+// Parse JSON bodies first
+app.use(bodyParser.json());
+app.use(cookieParser());
+
+// CORS configuration must come before any routes
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  'http://localhost:5173'
+].filter(Boolean);  // Remove any undefined values
+
+// Configure CORS
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.header('Access-Control-Allow-Origin', origin);
+  }
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  res.header('Access-Control-Allow-Credentials', true);
+  
+  // Handle preflight requests
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+  
+  next();
+});
+
+// Initialize Cloudinary
 await connectCloudinary();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-// Allow multiple origins from environment variable or default to localhost
-const allowedOrigins = process.env.FRONTEND_URL 
-  ? [process.env.FRONTEND_URL, "http://localhost:5173"] 
-  : ["http://localhost:5173"];
-
-// CORS middleware
-app.use(cors({ 
-  origin: function(origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    
-    if (allowedOrigins.indexOf(origin) === -1) {
-      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
-      return callback(new Error(msg), false);
-    }
-    return callback(null, true);
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
-app.use(cookieParser());
-app.use(bodyParser.json());
 
 
 
