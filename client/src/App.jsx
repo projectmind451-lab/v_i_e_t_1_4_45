@@ -14,6 +14,7 @@ import Address from "./pages/Address";
 import MyOrders from "./pages/MyOrders";
 import SellerLogin from "./components/seller/SellerLogin";
 import SellerLayout from "./pages/seller/SellerLayout";
+import DebugOrders from "./components/DebugOrders";
 import AddProduct from "./pages/seller/AddProduct";
 import ProductList from "./pages/seller/ProductList";
 import Orders from "./pages/seller/Orders";
@@ -60,6 +61,7 @@ const App = () => {
             <Route path="/contact" element={<Contact />} />
             <Route path="/my-orders" element={<MyOrders />} />
             <Route path="/loader" element={<Loading />} />
+            <Route path="/debug-orders" element={<DebugOrders />} />
 
             <Route
               path="/seller"

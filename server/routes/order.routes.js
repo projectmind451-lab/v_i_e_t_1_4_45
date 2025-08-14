@@ -32,38 +32,71 @@ router.put("/cancel/:orderId", authUser, cancelOrder);
 router.get("/seller", authSeller, async (req, res) => {
   try {
     const { page = 1, limit = 10, search = "", status = "" } = req.query;
+    console.log("Seller orders request:", { page, limit, search, status });
 
-    const query = {};
+    // Base query to only show valid orders (COD or paid online orders)
+    let query = {
+      $or: [{ paymentType: "COD" }, { isPaid: true }],
+    };
 
-    // Search by customer name or product name
-    if (search) {
-      query.$or = [
-        { "address.firstName": { $regex: search, $options: "i" } },
-        { "address.lastName": { $regex: search, $options: "i" } },
-        { "items.product.name": { $regex: search, $options: "i" } },
-      ];
-    }
-
-    // Filter by status
+    // Filter by status first
     if (status) {
       query.status = status;
     }
 
+    console.log("Base query:", JSON.stringify(query));
+
+    // Get total count first
     const total = await Order.countDocuments(query);
-    const orders = await Order.find(query)
-      .populate("items.product address")
+    console.log("Total orders found:", total);
+
+    // Get orders with population
+    let orders = await Order.find(query)
+      .populate({
+        path: "items.product",
+        select: "name image offerPrice"
+      })
+      .populate({
+        path: "address",
+        select: "firstName lastName email phone street city state zipCode country"
+      })
       .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
-      .limit(Number(limit));
+      .limit(Number(limit))
+      .lean();
+
+    console.log("Orders before search filter:", orders.length);
+
+    // Apply search filter after population (since we can't search on populated fields in MongoDB query)
+    if (search && search.trim()) {
+      const searchRegex = new RegExp(search.trim(), 'i');
+      orders = orders.filter(order => {
+        // Search in customer name
+        const customerMatch = 
+          (order.address?.firstName && searchRegex.test(order.address.firstName)) ||
+          (order.address?.lastName && searchRegex.test(order.address.lastName)) ||
+          (order.address?.email && searchRegex.test(order.address.email));
+
+        // Search in product names
+        const productMatch = order.items?.some(item => 
+          item.product?.name && searchRegex.test(item.product.name)
+        );
+
+        return customerMatch || productMatch;
+      });
+    }
+
+    console.log("Orders after search filter:", orders.length);
 
     res.json({
       success: true,
       orders,
-      total,
+      total: search ? orders.length : total,
       page: Number(page),
-      pages: Math.ceil(total / limit),
+      pages: Math.ceil((search ? orders.length : total) / limit),
     });
   } catch (error) {
+    console.error("Seller orders error:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 });

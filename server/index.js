@@ -25,7 +25,7 @@ app.use(cookieParser());
 
 // CORS configuration must come before any routes
 const allowedOrigins = [
-  process.env.FRONTEND_URL,
+  process.env.FRONTEND_URL
 ].filter(Boolean);  // Remove any undefined values
 
 console.log('Allowed origins:', allowedOrigins);
@@ -248,6 +248,38 @@ app.get("/api/debug/cookies", (req, res) => {
     origin: req.headers.origin,
     hasSellerToken: !!req.cookies?.sellerToken
   });
+});
+
+// Debug endpoint to check orders in database
+app.get("/api/debug/orders", async (req, res) => {
+  try {
+    const Order = (await import("./models/order.model.js")).default;
+    const totalOrders = await Order.countDocuments();
+    const validOrders = await Order.countDocuments({
+      $or: [{ paymentType: "COD" }, { isPaid: true }]
+    });
+    const recentOrders = await Order.find()
+      .sort({ createdAt: -1 })
+      .limit(5)
+      .lean();
+    
+    res.json({
+      totalOrders,
+      validOrders,
+      recentOrders: recentOrders.map(order => ({
+        _id: order._id,
+        userId: order.userId,
+        paymentType: order.paymentType,
+        isPaid: order.isPaid,
+        status: order.status,
+        amount: order.amount,
+        createdAt: order.createdAt
+      }))
+    });
+  } catch (error) {
+    console.error("Debug orders error:", error);
+    res.status(500).json({ error: error.message });
+  }
 });
 
 // API endpoints

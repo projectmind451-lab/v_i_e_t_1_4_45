@@ -14,6 +14,13 @@ const Orders = () => {
 
   const fetchOrders = async (pageNum = 1) => {
     try {
+      console.log("Fetching orders with params:", {
+        page: pageNum,
+        limit: 10,
+        search,
+        status: statusFilter,
+      });
+
       const { data } = await axios.get("/api/order/seller", {
         params: {
           page: pageNum,
@@ -23,15 +30,25 @@ const Orders = () => {
         },
       });
 
+      console.log("Orders response:", data);
+
       if (data.success) {
         setOrders(data.orders);
         setPages(data.pages);
         setPage(data.page);
+        console.log("Orders set:", data.orders.length);
       } else {
-        toast.error(data.message);
+        console.error("Orders fetch failed:", data.message);
+        toast.error(data.message || "Failed to fetch orders");
       }
     } catch (error) {
-      toast.error(error.message);
+      console.error("Orders fetch error:", error);
+      if (error.response) {
+        console.error("Error response:", error.response.data);
+        toast.error(error.response.data.message || "Failed to fetch orders");
+      } else {
+        toast.error(error.message || "Network error");
+      }
     }
   };
 
@@ -42,7 +59,16 @@ const Orders = () => {
       const { data } = await axios.delete(`/api/order/${orderId}`);
       if (data?.success) {
         toast.success("Order deleted");
-        setOrders((prev) => prev.filter((o) => o._id !== orderId));
+        setOrders((prev) => {
+          const next = prev.filter((o) => o._id !== orderId);
+          // If page becomes empty and there are previous pages, go back a page
+          if (next.length === 0 && page > 1) {
+            const prevPage = page - 1;
+            setPage(prevPage);
+            fetchOrders(prevPage);
+          }
+          return next;
+        });
       } else {
         toast.error(data?.message || "Failed to delete order");
       }
@@ -102,6 +128,9 @@ const Orders = () => {
     fetchOrders(page);
   }, [page, statusFilter]);
 
+  // Reset to first page when search term changes via Search button
+  // (Handled by clicking Search which calls fetchOrders(1) and we'll set page to 1.)
+
   return (
     <div className="p-2 sm:p-4 md:p-6">
       <h2 className="text-lg sm:text-xl font-medium mb-4">Orders Management</h2>
@@ -141,8 +170,11 @@ const Orders = () => {
 
       {/* Orders List */}
       {orders.length === 0 ? (
-        <div className="flex justify-center items-center p-8">
-          <p className="text-gray-500 text-center">No orders found.</p>
+        <div className="flex justify-center items-center p-10">
+          <div className="text-center">
+            <p className="text-gray-500">No orders found.</p>
+            <p className="text-gray-400 text-sm mt-1">Try changing filters or search.</p>
+          </div>
         </div>
       ) : (
         <div className="overflow-hidden">
@@ -435,6 +467,33 @@ const Orders = () => {
           </div>
         </div>
       )}
+
+      {/* Pagination */}
+      <div className="flex justify-center items-center gap-2 mt-4">
+        <button
+          disabled={page <= 1}
+          onClick={() => setPage((p) => Math.max(1, p - 1))}
+          className={`px-3 py-1 border rounded ${page <= 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100'}`}
+        >
+          Prev
+        </button>
+        {Array.from({ length: pages }, (_, i) => i + 1).map((pNum) => (
+          <button
+            key={pNum}
+            onClick={() => setPage(pNum)}
+            className={`px-3 py-1 border rounded ${pNum === page ? 'bg-indigo-500 text-white border-indigo-500' : 'hover:bg-gray-100'}`}
+          >
+            {pNum}
+          </button>
+        ))}
+        <button
+          disabled={page >= pages}
+          onClick={() => setPage((p) => Math.min(pages, p + 1))}
+          className={`px-3 py-1 border rounded ${page >= pages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100'}`}
+        >
+          Next
+        </button>
+      </div>
 
       {/* Pagination */}
       {pages > 1 && (
