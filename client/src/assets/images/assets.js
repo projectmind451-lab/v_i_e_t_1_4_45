@@ -63,7 +63,6 @@ import barley_image from "./barley_image.png";
 import briyani_masala_image from "./Biryani_Masala.png";
 import appalam_image from "./Appalam.jpeg";
 import channa_dal_image from "./Channa_Dal.jpeg";
-// Using Kabuli Channa as a replacement since Black_Channa files are missing
 import coriander_powder from "./Coriander_Powder.png";
 import cumin_powder from "./Cumin_Powder.png";
 import fish_fry_masala from "./Fish_Fry_Masala.png";
@@ -77,10 +76,22 @@ import ponni_raw_rice_cat from "./PonniRawRice_cat.png";
 import red_chilli_powder from "./Red_chilli_powder.png";
 import sambar_powder from "./Sambar_Powder.png";
 import sesame_oil from "./SesameOil.jpeg";
+import rasam_powder from "./Rasam_Powder.png";
+import roasted_gram from "./Roasted_Gram.jpeg";
 import turmeric from "./Turmeri_Powder.png";
 import turmericpowder from "./TurmericPower.jpeg";
 import vinita_mart from "./vinita_mart.jpeg";
 import vinita_groundnut from "./VinitaGroundnutoil.jpeg";
+
+// Product images
+import paneer_image_2 from "./paneer_image_2.png";
+import cheese_image from "./cheese_image.png";
+import coca_cola_image from "./coca_cola_image.png";
+import pepsi_image from "./pepsi_image.png";
+import sprite_image_1 from "./sprite_image_1.png";
+import fanta_image_1 from "./fanta_image_1.png";
+
+// Home page images
 import home1 from "./home1.jpeg";
 import home2 from "./home2.jpeg";
 import home3 from "./home3.jpeg";
@@ -93,10 +104,10 @@ import home11 from "./home11.png";
 import home12 from "./home12.jpg";
 import home13 from "./home13.jpg";
 import home14 from "./home14.jpg";
-import rasins from "./rasins_.png";
-// These imports are already correctly defined above
+import rasins from "./Rasins.jpg";
 
 // Re-export with different names for backward compatibility
+// Export all images with consistent naming
 export const AmulPureGhee = amul_milk_image;
 export const Appalam = appalam_image;
 export const Briyani_Masala = briyani_masala_image;
@@ -113,6 +124,7 @@ export const PonniRawRice = ponni_raw_rice_cat;
 export const PonniRice = ponni_raw_rice;
 export const Rasampowder = rasam_powder;
 export const redchilli = red_chilli_powder;
+// redChilliPower is a duplicate of redchilli - using the same image
 export const redChilliPower = red_chilli_powder;
 export const roastedgram = roasted_gram;
 export const sambar = sambar_powder;
@@ -505,9 +517,9 @@ export const dummyProducts = [
   {
     _id: "14",
     name: "Paneer 200g",
-    category: "appalam",
-    price: 90,
-    offerPrice: 85,
+    category: "dairy",
+    price: "26,100₫",
+    offerPrice: "24,650₫",
     image: [paneer_image_2],
     description: [
       "Soft and fresh",
@@ -521,9 +533,9 @@ export const dummyProducts = [
   {
     _id: "15",
     name: "Cheese 200g",
-    category: "appalam",
-    price: 140,
-    offerPrice: 130,
+    category: "dairy",
+    price: "40,600₫",
+    offerPrice: "37,700₫",
     image: [cheese_image],
     description: [
       "Creamy and delicious",
@@ -539,9 +551,9 @@ export const dummyProducts = [
   {
     _id: "16",
     name: "Coca-Cola 1.5L",
-    category: "appalam",
-    price: 80,
-    offerPrice: 75,
+    category: "beverages",
+    price: "23,200₫",
+    offerPrice: "21,750₫",
     image: [coca_cola_image],
     description: [
       "Refreshing and fizzy",
@@ -555,9 +567,9 @@ export const dummyProducts = [
   {
     _id: "17",
     name: "Pepsi 1.5L",
-    category: "appalam",
-    price: 78,
-    offerPrice: 73,
+    category: "beverages",
+    price: "22,620₫",
+    offerPrice: "21,170₫",
     image: [pepsi_image],
     description: [
       "Chilled and refreshing",
@@ -571,9 +583,9 @@ export const dummyProducts = [
   {
     _id: "18",
     name: "Sprite 1.5L",
-    category: "appalam",
-    price: 79,
-    offerPrice: 74,
+    category: "beverages",
+    price: "22,910₫",
+    offerPrice: "21,460₫",
     image: [sprite_image_1],
     description: [
       "Refreshing citrus taste",
@@ -587,9 +599,9 @@ export const dummyProducts = [
   {
     _id: "19",
     name: "Fanta 1.5L",
-    category: "appalam",
-    price: 77,
-    offerPrice: 72,
+    category: "beverages",
+    price: "22,330₫",
+    offerPrice: "20,880₫",
     image: [fanta_image_1],
     description: [
       "Sweet and fizzy",
