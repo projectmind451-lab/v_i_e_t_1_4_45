@@ -27,31 +27,30 @@ app.use(cookieParser());
 const allowedOrigins = [
   process.env.FRONTEND_URL,
   'http://localhost:5173',
-  'http://127.0.0.1:5173'  // Add localhost IP as well
+  'http://127.0.0.1:5173',
+  'https://vinitamart-frontend.onrender.com'  // Add explicit frontend URL
 ].filter(Boolean);  // Remove any undefined values
 
+console.log('Allowed origins:', allowedOrigins);
+
 // Configure CORS with enhanced security
-app.use((req, res, next) => {
-  const origin = req.headers.origin;
-  
-  // Check if the request origin is in allowed origins
-  if (allowedOrigins.includes(origin)) {
-    res.header('Access-Control-Allow-Origin', origin);
-  }
-  
-  // Set CORS headers
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-  res.header('Access-Control-Allow-Credentials', 'true');
-  res.header('Access-Control-Max-Age', '86400'); // 24 hours
-  
-  // Handle preflight requests
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-  
-  next();
-});
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    } else {
+      console.log('Blocked origin:', origin);
+      return callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization', 'Cookie'],
+  maxAge: 86400 // 24 hours
+}));
 
 // Initialize Cloudinary
 await connectCloudinary();
@@ -239,6 +238,20 @@ app.use("/uploads/images",
     }
   })
 );
+
+// Debug endpoint to check cookies
+app.get("/api/debug/cookies", (req, res) => {
+  console.log("Debug - All cookies:", req.cookies);
+  console.log("Debug - Cookie header:", req.headers.cookie);
+  console.log("Debug - Origin:", req.headers.origin);
+  console.log("Debug - User-Agent:", req.headers['user-agent']);
+  res.json({
+    cookies: req.cookies,
+    cookieHeader: req.headers.cookie,
+    origin: req.headers.origin,
+    hasSellerToken: !!req.cookies?.sellerToken
+  });
+});
 
 // API endpoints
 app.use("/api/user", userRoutes);

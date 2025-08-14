@@ -17,15 +17,21 @@ export const sellerLogin = async (req, res) => {
     const inPassword = password || "";
 
     if (inPassword === envPassword && inEmail === envEmail) {
-      const token = jwt.sign({ email }, process.env.JWT_SECRET, {
+      const token = jwt.sign({ email: inEmail }, process.env.JWT_SECRET, {
         expiresIn: "7d",
       });
-      res.cookie("sellerToken", token, {
+      
+      const cookieOptions = {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
         maxAge: 7 * 24 * 60 * 60 * 1000,
-      });
+      };
+      
+      console.log("Setting cookie with options:", cookieOptions);
+      console.log("NODE_ENV:", process.env.NODE_ENV);
+      
+      res.cookie("sellerToken", token, cookieOptions);
       return res
         .status(200)
         .json({ message: "Login successful", success: true });
@@ -67,6 +73,7 @@ export const sellerLogout = async (req, res) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      path: "/",
     });
     return res.status(200).json({
       message: "Logged out successfully",
