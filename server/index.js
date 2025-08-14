@@ -213,7 +213,7 @@ app.post("/api/verify-email-otp", (req, res) => {
 
 
 // Api endpoints
-app.use("/images", express.static("uploads"));
+app.use("/images", cors({ origin: "*", methods: ["GET"], allowedHeaders: ["Content-Type"] }), express.static("uploads"));
 app.use("/api/user", userRoutes);
 app.use("/api/seller", sellerRoutes);
 app.use("/api/product", productRoutes);
