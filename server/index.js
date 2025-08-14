@@ -214,6 +214,20 @@ app.post("/api/verify-email-otp", (req, res) => {
 
 // Api endpoints
 app.use("/images", cors({ origin: "*", methods: ["GET"], allowedHeaders: ["Content-Type"] }), express.static("uploads"));
+
+// Serve static files from the uploads directory
+const uploadsPath = path.join(process.cwd(), 'uploads');
+app.use("/images", express.static(uploadsPath, {
+  setHeaders: (res, path) => {
+    // Set proper cache control headers for images
+    if (path.endsWith('.png') || path.endsWith('.jpg') || path.endsWith('.jpeg')) {
+      res.setHeader('Cache-Control', 'public, max-age=31536000');
+    }
+  }
+}));
+
+// API endpoints
+// ab62b18 (add image folder)
 app.use("/api/user", userRoutes);
 app.use("/api/seller", sellerRoutes);
 app.use("/api/product", productRoutes);
