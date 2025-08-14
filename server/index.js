@@ -26,9 +26,6 @@ app.use(cookieParser());
 // CORS configuration must come before any routes
 const allowedOrigins = [
   process.env.FRONTEND_URL,
-  'http://localhost:5173',
-  'http://127.0.0.1:5173',
-  'https://vinitamart-frontend.onrender.com'  // Add explicit frontend URL
 ].filter(Boolean);  // Remove any undefined values
 
 console.log('Allowed origins:', allowedOrigins);
@@ -222,7 +219,7 @@ if (!fs.existsSync(imagesPath)) {
 // Serve static files with proper CORS and caching
 app.use("/uploads/images", 
   cors({ 
-    origin: [process.env.FRONTEND_URL, 'http://localhost:5173'],
+    origin: [process.env.FRONTEND_URL],
     credentials: true
   }), 
   express.static(imagesPath, {
@@ -232,7 +229,7 @@ app.use("/uploads/images",
         res.setHeader('Cache-Control', 'public, max-age=31536000');
       }
       // Allow CORS for images
-      res.header('Access-Control-Allow-Origin', process.env.FRONTEND_URL || '*' );
+      res.header('Access-Control-Allow-Origin', process.env.FRONTEND_URL || '');
       res.header('Access-Control-Allow-Methods', 'GET');
       res.header('Access-Control-Allow-Headers', 'Content-Type');
     }

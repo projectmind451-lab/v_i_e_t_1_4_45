@@ -1,11 +1,10 @@
-// Get backend URL from environment variable or use default
-const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
-const backendUrl = isProduction 
-  ? 'https://vinitamart-backend.onrender.com'  // Replace with your actual backend URL
-  : 'http://localhost:5000';
+// Backend base URL should come from environment (no hardcoded URLs)
+// Define VITE_BACKEND_URL in client/.env or hosting provider envs
+const backendUrl = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_BACKEND_URL) || '';
 
 export const getBackendUrl = () => {
-  return backendUrl.endsWith('/') ? backendUrl.slice(0, -1) : backendUrl;
+  const base = backendUrl || (typeof window !== 'undefined' ? window.__BACKEND_URL__ || '' : '');
+  return base.endsWith('/') ? base.slice(0, -1) : base;
 };
 
 export const getImageUrl = (path) => {
