@@ -166,7 +166,7 @@ const Orders = () => {
                         </div>
                       ))}
                     </td>
-                    <td className="p-2 border">
+                    <td className="p-2 border group relative">
                       <div className="flex flex-col gap-1 text-xs">
                         <div className="font-medium">
                           {order.address.firstName} {order.address.lastName}
@@ -174,6 +174,55 @@ const Orders = () => {
                         <div className="text-gray-600 truncate">{order.address.email}</div>
                         <div className="text-gray-500 text-xs">
                           {order.address.phone}
+                        </div>
+                      </div>
+                      
+                      {/* Hover card with full details */}
+                      <div className="absolute z-10 left-0 mt-2 w-64 p-3 bg-white border border-gray-200 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                        <h4 className="font-medium text-sm mb-2">Customer Details</h4>
+                        <div className="space-y-1 text-xs">
+                          <div className="grid grid-cols-2 gap-2">
+                            <div>
+                              <p className="text-gray-500">First Name</p>
+                              <p className="font-medium">{order.address.firstName || 'Not provided'}</p>
+                            </div>
+                            <div>
+                              <p className="text-gray-500">Last Name</p>
+                              <p className="font-medium">{order.address.lastName || 'Not provided'}</p>
+                            </div>
+                          </div>
+                          <div>
+                            <p className="text-gray-500">Email</p>
+                            <p className="font-medium break-words">{order.address.email || 'Not provided'}</p>
+                          </div>
+                          <div>
+                            <p className="text-gray-500">Phone</p>
+                            <p className="font-medium">{order.address.phone || 'Not provided'}</p>
+                          </div>
+                          <div>
+                            <p className="text-gray-500">Address</p>
+                            <p className="font-medium">{order.address.street || 'Not provided'}</p>
+                          </div>
+                          <div className="grid grid-cols-2 gap-2">
+                            <div>
+                              <p className="text-gray-500">City</p>
+                              <p className="font-medium">{order.address.city || 'Not provided'}</p>
+                            </div>
+                            <div>
+                              <p className="text-gray-500">State</p>
+                              <p className="font-medium">{order.address.state || 'Not provided'}</p>
+                            </div>
+                          </div>
+                          <div className="grid grid-cols-2 gap-2">
+                            <div>
+                              <p className="text-gray-500">Postal Code</p>
+                              <p className="font-medium">{order.address.zipCode || 'Not provided'}</p>
+                            </div>
+                            <div>
+                              <p className="text-gray-500">Country</p>
+                              <p className="font-medium">{order.address.country || 'Not provided'}</p>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </td>
@@ -318,7 +367,7 @@ const Orders = () => {
                       <img
                         src={
                           item.product?.image?.[0]
-                            ? `http://localhost:5000/images/${item.product.image[0]}`
+                            ? getImageUrl(item.product.image[0])
                             : "/no-image.png"
                         }
                         alt="product"

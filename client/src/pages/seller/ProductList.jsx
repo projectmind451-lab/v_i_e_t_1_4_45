@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { formatVND } from "../../utils/currency";
 import toast from "react-hot-toast";
 import { useAppContext } from "../../context/AppContext";
+import { getImageUrl } from "../../utils/config";
 
 const ProductList = () => {
   const { products, fetchProducts, axios } = useAppContext();
@@ -92,27 +93,23 @@ const ProductList = () => {
 
   return (
     <div className="flex-1 py-6 md:py-10 flex flex-col justify-between">
-  <div className="w-full md:p-10 p-3">
-    <h2 className="pb-3 md:pb-4 text-base md:text-lg font-medium">All Products</h2>
-    {/* Mobile cards (xs only) */}
-    <div className="sm:hidden space-y-3">
-      {products.map((product) => (
-        <div key={product._id} className="bg-white border border-gray-200 rounded-md p-3 flex gap-3">
-          <div className="border border-gray-300 rounded p-1.5 shrink-0">
-            {(() => {
-              const img0 = product?.image?.[0];
-              const src = img0
-                ? (img0.startsWith("http") ? img0 : `/images/${img0}`)
-                : null;
-              return (
+      <div className="w-full md:p-10 p-3">
+        <h2 className="pb-3 md:pb-4 text-base md:text-lg font-medium">All Products</h2>
+        {/* Mobile cards (xs only) */}
+        <div className="sm:hidden space-y-3">
+          {products.map((product) => (
+            <div key={product._id} className="bg-white border border-gray-200 rounded-md p-3 flex gap-3">
+              <div className="border border-gray-300 rounded p-1.5 shrink-0">
                 <img
-                  src={src || "/src/assets/upload_area.png"}
+                  src={product?.image?.[0] ? getImageUrl(product.image[0]) : "/src/assets/upload_area.png"}
                   alt="Product"
                   className="w-16 h-16 object-cover rounded"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = "/src/assets/upload_area.png";
+                  }}
                 />
-              );
-            })()}
-          </div>
+              </div>
           <div className="flex-1 min-w-0">
             {editingProduct === product._id ? (
               <input
@@ -205,19 +202,15 @@ const ProductList = () => {
                 <td className="px-3 md:px-4 py-3">
                   <div className="flex items-center gap-3 min-w-0">
                     <div className="border border-gray-300 rounded p-1.5 md:p-2 shrink-0">
-                      {(() => {
-                        const img0 = product?.image?.[0];
-                        const src = img0
-                          ? (img0.startsWith("http") ? img0 : `/images/${img0}`)
-                          : null;
-                        return (
-                          <img
-                            src={src || "/src/assets/upload_area.png"}
-                            alt="Product"
-                            className="w-12 md:w-16 h-auto object-cover rounded"
-                          />
-                        );
-                      })()}
+                      <img
+                        src={product?.image?.[0] ? getImageUrl(product.image[0]) : "/src/assets/upload_area.png"}
+                        alt="Product"
+                        className="w-12 md:w-16 h-auto object-cover rounded"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = "/src/assets/upload_area.png";
+                        }}
+                      />
                     </div>
                     <div className="min-w-0 flex-1">
                       {editingProduct === product._id ? (

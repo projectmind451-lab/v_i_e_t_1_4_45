@@ -16,11 +16,9 @@ export const getImageUrl = (path) => {
     return path;
   }
   
-  // For local development
-  if (!isProduction) {
-    return `${getBackendUrl()}/images/${path}`;
-  }
+  // Remove any leading slashes or uploads/images from the path
+  const cleanPath = path.replace(/^[\/]*(uploads[\/]?images[\/]?)?/, '');
   
-  // For production - use the correct path
-  return `https://vinitamart-backend.onrender.com/images/${path}`;
+  // For both development and production, use the /uploads/images path
+  return `${getBackendUrl()}/uploads/images/${cleanPath}`;
 };
