@@ -212,22 +212,35 @@ app.post("/api/verify-email-otp", (req, res) => {
 });
 
 
-// Api endpoints
-app.use("/images", cors({ origin: "*", methods: ["GET"], allowedHeaders: ["Content-Type"] }), express.static("uploads"));
+// Serve static files from the uploads/images directory
+const imagesPath = path.join(process.cwd(), 'uploads', 'images');
 
-// Serve static files from the uploads directory
-const uploadsPath = path.join(process.cwd(), 'uploads');
-app.use("/images", express.static(uploadsPath, {
-  setHeaders: (res, path) => {
-    // Set proper cache control headers for images
-    if (path.endsWith('.png') || path.endsWith('.jpg') || path.endsWith('.jpeg')) {
-      res.setHeader('Cache-Control', 'public, max-age=31536000');
+// Create images directory if it doesn't exist
+if (!fs.existsSync(imagesPath)) {
+  fs.mkdirSync(imagesPath, { recursive: true });
+}
+
+// Serve static files with proper CORS and caching
+app.use("/images", 
+  cors({ 
+    origin: [process.env.FRONTEND_URL, 'http://localhost:5173'],
+    credentials: true
+  }), 
+  express.static(imagesPath, {
+    setHeaders: (res, path) => {
+      // Set proper cache control headers for images
+      if (path.endsWith('.png') || path.endsWith('.jpg') || path.endsWith('.jpeg')) {
+        res.setHeader('Cache-Control', 'public, max-age=31536000');
+      }
+      // Allow CORS for images
+      res.header('Access-Control-Allow-Origin', process.env.FRONTEND_URL || '*' );
+      res.header('Access-Control-Allow-Methods', 'GET');
+      res.header('Access-Control-Allow-Headers', 'Content-Type');
     }
-  }
-}));
+  })
+);
 
 // API endpoints
-// ab62b18 (add image folder)
 app.use("/api/user", userRoutes);
 app.use("/api/seller", sellerRoutes);
 app.use("/api/product", productRoutes);
