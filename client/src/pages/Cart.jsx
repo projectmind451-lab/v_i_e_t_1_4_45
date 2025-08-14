@@ -163,7 +163,7 @@ const Cart = () => {
               </div>
             </div>
             <p className="text-center">
-              {formatVND(product.offerPrice * product.quantity)}
+              {formatVND(product.price * product.quantity)}
             </p>
             <button
               onClick={() => removeFromCart(product._id)}

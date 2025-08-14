@@ -129,9 +129,9 @@ const SingleProduct = () => {
           <div className="mt-6">
             {/* Prices shown in Vietnamese Dong (₫) */}
             <p className="text-gray-500/70 line-through">
-              MRP: {formatVND(product.price)}
+              MRP: {formatVND(product.offerPrice)}
             </p>
-            <p className="text-2xl font-medium">MRP: {formatVND(product.offerPrice || product.price)}</p>
+            <p className="text-2xl font-medium">MRP: {formatVND(product.price || product.price)}</p>
             <span className="text-gray-500/70">(inclusive of all taxes)</span>
           </div>
 

@@ -102,7 +102,7 @@ export const AppContextProvider = ({ children }) => {
     for (const items in cartItems) {
       let itemInfo = products.find((product) => product._id === items);
       if (cartItems[items] > 0) {
-        totalAmount += cartItems[items] * itemInfo.offerPrice;
+        totalAmount += cartItems[items] * itemInfo.price;
       }
     }
     return Math.floor(totalAmount * 100) / 100;
