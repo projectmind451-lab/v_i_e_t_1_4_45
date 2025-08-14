@@ -50,24 +50,99 @@ router.get("/seller", authSeller, async (req, res) => {
     const total = await Order.countDocuments(query);
     console.log("Total orders found:", total);
 
-    // Get orders with population
+    // Get orders without population first to avoid ObjectId cast errors
     let orders = await Order.find(query)
-      .populate({
-        path: "items.product",
-        select: "name image offerPrice"
-      })
-      .populate({
-        path: "address",
-        select: "firstName lastName email phone street city state zipCode country"
-      })
       .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(Number(limit))
       .lean();
 
-    console.log("Orders before search filter:", orders.length);
+    console.log("Orders fetched:", orders.length);
 
-    // Apply search filter after population (since we can't search on populated fields in MongoDB query)
+    // Manually populate with error handling
+    const mongoose = await import('mongoose');
+    const Address = (await import('../models/address.model.js')).default;
+    const Product = (await import('../models/product.model.js')).default;
+
+    for (let order of orders) {
+      // Safely populate address
+      try {
+        if (order.address && mongoose.Types.ObjectId.isValid(order.address)) {
+          const address = await Address.findById(order.address).lean();
+          order.address = address || {
+            firstName: 'Unknown',
+            lastName: 'Customer',
+            email: 'unknown@email.com',
+            phone: 'N/A',
+            street: 'N/A',
+            city: 'N/A',
+            state: 'N/A',
+            zipCode: 'N/A',
+            country: 'N/A'
+          };
+        } else {
+          console.warn(`Invalid address ID for order ${order._id}:`, order.address);
+          order.address = {
+            firstName: 'Unknown',
+            lastName: 'Customer',
+            email: 'unknown@email.com',
+            phone: 'N/A',
+            street: 'N/A',
+            city: 'N/A',
+            state: 'N/A',
+            zipCode: 'N/A',
+            country: 'N/A'
+          };
+        }
+      } catch (addressError) {
+        console.error(`Error populating address for order ${order._id}:`, addressError);
+        order.address = {
+          firstName: 'Unknown',
+          lastName: 'Customer',
+          email: 'unknown@email.com',
+          phone: 'N/A',
+          street: 'N/A',
+          city: 'N/A',
+          state: 'N/A',
+          zipCode: 'N/A',
+          country: 'N/A'
+        };
+      }
+
+      // Safely populate products
+      if (order.items && Array.isArray(order.items)) {
+        for (let item of order.items) {
+          try {
+            if (item.product && mongoose.Types.ObjectId.isValid(item.product)) {
+              const product = await Product.findById(item.product).select('name image offerPrice').lean();
+              item.product = product || {
+                name: 'Unknown Product',
+                image: [],
+                offerPrice: 0
+              };
+            } else {
+              console.warn(`Invalid product ID for order ${order._id}:`, item.product);
+              item.product = {
+                name: 'Unknown Product',
+                image: [],
+                offerPrice: 0
+              };
+            }
+          } catch (productError) {
+            console.error(`Error populating product for order ${order._id}:`, productError);
+            item.product = {
+              name: 'Unknown Product',
+              image: [],
+              offerPrice: 0
+            };
+          }
+        }
+      }
+    }
+
+    console.log("Orders after population:", orders.length);
+
+    // Apply search filter after population
     if (search && search.trim()) {
       const searchRegex = new RegExp(search.trim(), 'i');
       orders = orders.filter(order => {

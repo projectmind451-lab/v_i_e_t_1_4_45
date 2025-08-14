@@ -25,7 +25,10 @@ app.use(cookieParser());
 
 // CORS configuration must come before any routes
 const allowedOrigins = [
-  process.env.FRONTEND_URL
+  process.env.FRONTEND_URL,
+  'https://wonderful-shortbread-3552e1.netlify.app',
+  'http://localhost:5173',
+  'http://localhost:3000'
 ].filter(Boolean);  // Remove any undefined values
 
 console.log('Allowed origins:', allowedOrigins);
@@ -254,10 +257,27 @@ app.get("/api/debug/cookies", (req, res) => {
 app.get("/api/debug/orders", async (req, res) => {
   try {
     const Order = (await import("./models/order.model.js")).default;
+    const Address = (await import("./models/address.model.js")).default;
+    const mongoose = (await import("mongoose")).default;
+    
     const totalOrders = await Order.countDocuments();
     const validOrders = await Order.countDocuments({
       $or: [{ paymentType: "COD" }, { isPaid: true }]
     });
+    
+    // Check for invalid address references
+    const ordersWithInvalidAddresses = await Order.find().lean();
+    const invalidAddresses = [];
+    
+    for (const order of ordersWithInvalidAddresses) {
+      if (!mongoose.Types.ObjectId.isValid(order.address)) {
+        invalidAddresses.push({
+          orderId: order._id,
+          invalidAddress: order.address
+        });
+      }
+    }
+    
     const recentOrders = await Order.find()
       .sort({ createdAt: -1 })
       .limit(5)
@@ -266,6 +286,8 @@ app.get("/api/debug/orders", async (req, res) => {
     res.json({
       totalOrders,
       validOrders,
+      invalidAddresses: invalidAddresses.length,
+      invalidAddressDetails: invalidAddresses.slice(0, 5), // Show first 5
       recentOrders: recentOrders.map(order => ({
         _id: order._id,
         userId: order.userId,
@@ -273,11 +295,63 @@ app.get("/api/debug/orders", async (req, res) => {
         isPaid: order.isPaid,
         status: order.status,
         amount: order.amount,
+        address: order.address,
+        addressValid: mongoose.Types.ObjectId.isValid(order.address),
         createdAt: order.createdAt
       }))
     });
   } catch (error) {
     console.error("Debug orders error:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Cleanup endpoint to fix invalid ObjectId references
+app.post("/api/debug/cleanup-orders", async (req, res) => {
+  try {
+    const Order = (await import("./models/order.model.js")).default;
+    const Address = (await import("./models/address.model.js")).default;
+    const mongoose = (await import("mongoose")).default;
+    
+    // Find orders with invalid address references
+    const orders = await Order.find().lean();
+    const fixedOrders = [];
+    
+    for (const order of orders) {
+      if (!mongoose.Types.ObjectId.isValid(order.address)) {
+        // Create a default address for this order
+        const defaultAddress = await Address.create({
+          firstName: 'Unknown',
+          lastName: 'Customer',
+          email: 'unknown@email.com',
+          phone: 'N/A',
+          street: 'N/A',
+          city: 'N/A',
+          state: 'N/A',
+          zipCode: 'N/A',
+          country: 'N/A'
+        });
+        
+        // Update the order with the new address
+        await Order.findByIdAndUpdate(order._id, {
+          address: defaultAddress._id
+        });
+        
+        fixedOrders.push({
+          orderId: order._id,
+          oldAddress: order.address,
+          newAddress: defaultAddress._id
+        });
+      }
+    }
+    
+    res.json({
+      success: true,
+      message: `Fixed ${fixedOrders.length} orders with invalid addresses`,
+      fixedOrders
+    });
+  } catch (error) {
+    console.error("Cleanup error:", error);
     res.status(500).json({ error: error.message });
   }
 });
