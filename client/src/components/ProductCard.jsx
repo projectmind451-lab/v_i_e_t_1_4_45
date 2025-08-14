@@ -51,10 +51,7 @@ const ProductCard = ({ product }) => {
         <div className="mt-2 flex items-end justify-between">
           {/* Prices shown in Vietnamese Dong (₫) */}
           <p className="text-indigo-600 text-sm sm:text-base font-semibold">
-            {formatVND(product.price)}{" "}
-            <span className="text-gray-400 text-xs line-through ml-1">
-              {formatVND(product.offerPrice)}
-            </span>
+            {formatVND(product.price)}
           </p>
 
           {/* Cart Button/Quantity */}
