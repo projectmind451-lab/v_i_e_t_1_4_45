@@ -34,7 +34,11 @@ export const sellerLogin = async (req, res) => {
       res.cookie("sellerToken", token, cookieOptions);
       return res
         .status(200)
-        .json({ message: "Login successful", success: true });
+        .json({ 
+          message: "Login successful", 
+          success: true,
+          token: token // Also send token in response for fallback
+        });
     } else {
       return res
         .status(400)
@@ -49,8 +53,19 @@ export const sellerLogin = async (req, res) => {
 // check seller auth  : /api/seller/is-auth
 export const checkAuth = async (req, res) => {
   try {
-    const token = req.cookies?.sellerToken;
+    // Try to get token from cookies first, then from Authorization header
+    let token = req.cookies?.sellerToken;
+    
+    // If no cookie token, try Authorization header
+    if (!token && req.headers.authorization) {
+      const authHeader = req.headers.authorization;
+      if (authHeader.startsWith('Bearer ')) {
+        token = authHeader.substring(7);
+      }
+    }
+    
     if (!token) return res.status(200).json({ success: false });
+    
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
       // Optionally ensure email matches configured seller in env

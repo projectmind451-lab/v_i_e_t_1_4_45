@@ -15,10 +15,30 @@ export const AppContextProvider = ({ children }) => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [isSeller, setIsSeller] = useState(false);
+  const [sellerToken, setSellerToken] = useState(localStorage.getItem('sellerToken'));
   const [showUserLogin, setShowUserLogin] = useState(false);
   const [products, setProducts] = useState([]);
   const [cartItems, setCartItems] = useState({});
   const [searchQuery, setSearchQuery] = useState("");
+
+  // Set up axios interceptor to add Authorization header if token exists
+  useEffect(() => {
+    const interceptor = axios.interceptors.request.use(
+      (config) => {
+        if (sellerToken && !config.headers.Authorization) {
+          config.headers.Authorization = `Bearer ${sellerToken}`;
+        }
+        return config;
+      },
+      (error) => {
+        return Promise.reject(error);
+      }
+    );
+
+    return () => {
+      axios.interceptors.request.eject(interceptor);
+    };
+  }, [sellerToken]);
 
   // check seller status
   const fetchSeller = async () => {
@@ -144,12 +164,31 @@ export const AppContextProvider = ({ children }) => {
     }
   }, [cartItems]);
 
+  // Token management functions
+  const setSellerTokenAndStore = (token) => {
+    setSellerToken(token);
+    if (token) {
+      localStorage.setItem('sellerToken', token);
+    } else {
+      localStorage.removeItem('sellerToken');
+    }
+  };
+
+  const clearSellerToken = () => {
+    setSellerToken(null);
+    localStorage.removeItem('sellerToken');
+    setIsSeller(false);
+  };
+
   const value = {
     navigate,
     user,
     setUser,
     isSeller,
     setIsSeller,
+    sellerToken,
+    setSellerToken: setSellerTokenAndStore,
+    clearSellerToken,
     showUserLogin,
     setShowUserLogin,
     products,

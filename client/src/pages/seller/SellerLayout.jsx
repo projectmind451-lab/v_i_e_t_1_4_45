@@ -4,7 +4,7 @@ import vinitamartLogo from "../../assets/images/vinitamart_logo.png";
 import { useAppContext } from "../../context/AppContext";
 import toast from "react-hot-toast";
 const SellerLayout = () => {
-  const { isSeller, setIsSeller, axios, navigate } = useAppContext();
+  const { isSeller, setIsSeller, clearSellerToken, axios, navigate } = useAppContext();
   const sidebarLinks = [
     { name: "Add Product", path: "/seller", icon: assets.add_icon },
     {
@@ -19,13 +19,17 @@ const SellerLayout = () => {
     try {
       const { data } = await axios.get("/api/seller/logout");
       if (data.success) {
+        clearSellerToken(); // Clear stored token
         setIsSeller(false);
         toast.success("Logged out successfully");
         navigate("/");
       }
     } catch (error) {
+      clearSellerToken(); // Clear token even if logout request fails
+      setIsSeller(false);
       toast.error("Failed to logout");
       console.error(error);
+      navigate("/");
     }
   };
   return (
