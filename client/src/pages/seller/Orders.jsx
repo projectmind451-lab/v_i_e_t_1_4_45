@@ -35,6 +35,22 @@ const Orders = () => {
     }
   };
 
+  const deleteOrderById = async (orderId) => {
+    const ok = window.confirm("Delete this order permanently? This action cannot be undone.");
+    if (!ok) return;
+    try {
+      const { data } = await axios.delete(`/api/order/${orderId}`);
+      if (data?.success) {
+        toast.success("Order deleted");
+        setOrders((prev) => prev.filter((o) => o._id !== orderId));
+      } else {
+        toast.error(data?.message || "Failed to delete order");
+      }
+    } catch (error) {
+      toast.error(error?.response?.data?.message || error.message || "Failed to delete order");
+    }
+  };
+
   const updateOrderStatus = async (orderId, newStatus) => {
     try {
       const { data } = await axios.put(`/api/order/${orderId}/status`, {
@@ -254,17 +270,25 @@ const Orders = () => {
                       </span>
                     </td>
                     <td className="p-2 border">
-                      <select
-                        value={order.status || "Pending"}
-                        onChange={(e) => updateOrderStatus(order._id, e.target.value)}
-                        className="w-full p-1 border rounded text-xs sm:text-sm"
-                      >
-                        <option value="Pending">Pending</option>
-                        <option value="Processing">Processing</option>
-                        <option value="Shipped">Shipped</option>
-                        <option value="Delivered">Delivered</option>
-                        <option value="Cancelled">Cancelled</option>
-                      </select>
+                      <div className="flex flex-col gap-2">
+                        <select
+                          value={order.status || "Pending"}
+                          onChange={(e) => updateOrderStatus(order._id, e.target.value)}
+                          className="w-full p-1 border rounded text-xs sm:text-sm"
+                        >
+                          <option value="Pending">Pending</option>
+                          <option value="Processing">Processing</option>
+                          <option value="Shipped">Shipped</option>
+                          <option value="Delivered">Delivered</option>
+                          <option value="Cancelled">Cancelled</option>
+                        </select>
+                        <button
+                          onClick={() => deleteOrderById(order._id)}
+                          className="w-full px-2 py-1 rounded text-xs sm:text-sm bg-red-500 text-white hover:bg-red-600"
+                        >
+                          Delete
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -399,6 +423,12 @@ const Orders = () => {
                     <option value="Delivered">Delivered</option>
                     <option value="Cancelled">Cancelled</option>
                   </select>
+                  <button
+                    onClick={() => deleteOrderById(order._id)}
+                    className="w-full mt-3 px-3 py-2 rounded text-sm bg-red-500 text-white hover:bg-red-600"
+                  >
+                    Delete Order
+                  </button>
                 </div>
               </div>
             ))}

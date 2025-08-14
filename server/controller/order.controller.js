@@ -344,3 +344,20 @@ export const updatePaymentStatus = async (req, res) => {
     res.status(500).json({ message: error.message, success: false });
   }
 };
+
+// DELETE order by seller: /api/order/:orderId
+export const deleteOrder = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const order = await Order.findById(orderId);
+    if (!order) {
+      return res.status(404).json({ success: false, message: "Order not found" });
+    }
+
+    await Order.findByIdAndDelete(orderId);
+    return res.json({ success: true, message: "Order deleted" });
+  } catch (error) {
+    console.error("deleteOrder error:", error);
+    return res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};

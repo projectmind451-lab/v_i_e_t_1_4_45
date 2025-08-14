@@ -10,6 +10,7 @@ import {
   cancelOrder,
   updateOrderStatus,
   updatePaymentStatus,
+  deleteOrder,
 } from "../controller/order.controller.js";
 
 const router = express.Router();
@@ -72,6 +73,9 @@ router.put("/:orderId/status", authSeller, updateOrderStatus);
 
 // Update payment status (seller)
 router.put("/:orderId/payment", authSeller, updatePaymentStatus);
+
+// Delete an order (seller)
+router.delete("/:orderId", authSeller, deleteOrder);
 
 // Admin/Seller: Get all orders
 router.get("/all", authSeller, getAllOrders);
