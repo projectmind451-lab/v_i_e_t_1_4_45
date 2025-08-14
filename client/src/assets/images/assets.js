@@ -1,4 +1,4 @@
-// Import all images from the current directory with consistent naming
+// Icons
 import logo from "./logo.png";
 import search_icon from "./search_icon.svg";
 import remove_icon from "./remove_icon.svg";
@@ -11,7 +11,6 @@ import add_icon from "./add_icon.svg";
 import refresh_icon from "./refresh_icon.svg";
 import product_list_icon from "./product_list_icon.svg";
 import order_icon from "./order_icon.svg";
-import upload_area from "./upload_area.png";
 import profile_icon from "./profile_icon.png";
 import menu_icon from "./menu_icon.svg";
 import delivery_truck_icon from "./delivery_truck_icon.svg";
@@ -21,11 +20,16 @@ import box_icon from "./box_icon.svg";
 import trust_icon from "./trust_icon.svg";
 import black_arrow_icon from "./black_arrow_icon.svg";
 import white_arrow_icon from "./white_arrow_icon.svg";
+
+// UI Elements
+import upload_area from "./upload_area.png";
 import main_banner_bg from "./main_banner_bg.png";
 import main_banner_bg_sm from "./main_banner_bg_sm.png";
 import bottom_banner_image from "./bottom_banner_image.png";
 import bottom_banner_image_sm from "./bottom_banner_image_sm.png";
 import add_address_iamge from "./add_address_image.svg";
+
+// Product Images
 import maggi_image from "./maggi_image.png";
 import tomato_image from "./tomato_image.png";
 import carrot_image from "./carrot_image.png";
@@ -35,6 +39,7 @@ import coca_cola_image from "./coca_cola_image.png";
 import brown_bread_image from "./brown_bread_image.png";
 import basmati_rice_image from "./basmati_rice_image.png";
 import paneer_image from "./paneer_image.png";
+import paneer_image_2 from "./paneer_image_2.png";
 import orange_image from "./orange_image.png";
 import pepsi_image from "./pepsi_image.png";
 import wheat_flour_image from "./wheat_flour_image.png";
@@ -45,7 +50,6 @@ import onion_image_1 from "./onion_image_1.png";
 import banana_image_1 from "./banana_image_1.png";
 import mango_image_1 from "./mango_image_1.png";
 import grapes_image_1 from "./grapes_image_1.png";
-import paneer_image_2 from "./paneer_image_2.png";
 import sprite_image_1 from "./sprite_image_1.png";
 import fanta_image_1 from "./fanta_image_1.png";
 import seven_up_image_1 from "./seven_up_image_1.png";
@@ -60,6 +64,8 @@ import vanilla_muffins_image from "./vanilla_muffins_image.png";
 import quinoa_image from "./quinoa_image.png";
 import brown_rice_image from "./brown_rice_image.png";
 import barley_image from "./barley_image.png";
+
+// Grocery Items
 import briyani_masala_image from "./Biryani_Masala.png";
 import appalam_image from "./Appalam.jpeg";
 import channa_dal_image from "./Channa_Dal.jpeg";
@@ -82,14 +88,6 @@ import turmeric from "./Turmeri_Powder.png";
 import turmericpowder from "./TurmericPower.jpeg";
 import vinita_mart from "./vinita_mart.jpeg";
 import vinita_groundnut from "./VinitaGroundnutoil.jpeg";
-
-// Product images
-import paneer_image_2 from "./paneer_image_2.png";
-import cheese_image from "./cheese_image.png";
-import coca_cola_image from "./coca_cola_image.png";
-import pepsi_image from "./pepsi_image.png";
-import sprite_image_1 from "./sprite_image_1.png";
-import fanta_image_1 from "./fanta_image_1.png";
 
 // Home page images
 import home1 from "./home1.jpeg";
