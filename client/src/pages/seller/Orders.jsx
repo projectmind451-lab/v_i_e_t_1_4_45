@@ -146,7 +146,7 @@ const Orders = () => {
             className="flex-1 border p-2 rounded text-sm sm:text-base"
           />
           <button
-            onClick={() => fetchOrders(1)}
+            onClick={() => { setPage(1); fetchOrders(1); }}
             className="bg-primary hover:bg-[color:var(--color-primary-600)] text-white px-4 py-2 rounded whitespace-nowrap"
           >
             Search
@@ -495,53 +495,7 @@ const Orders = () => {
         </button>
       </div>
 
-      {/* Pagination */}
-      {pages > 1 && (
-        <div className="flex justify-center gap-1 sm:gap-2 mt-4 mb-6">
-          {page > 1 && (
-            <button
-              onClick={() => fetchOrders(page - 1)}
-              className="px-2 sm:px-3 py-1 border rounded hover:bg-gray-100"
-            >
-              &laquo; Prev
-            </button>
-          )}
-          
-          {Array.from({ length: Math.min(3, pages) }, (_, i) => {
-            let pageNum;
-            if (page <= 2) {
-              pageNum = i + 1;
-            } else if (page >= pages - 1) {
-              pageNum = pages - 2 + i;
-            } else {
-              pageNum = page - 1 + i;
-            }
-            
-            if (pageNum > pages) return null;
-            
-            return (
-              <button
-                key={pageNum}
-                onClick={() => fetchOrders(pageNum)}
-                className={`px-2 sm:px-3 py-1 border rounded text-sm sm:text-base ${
-                  page === pageNum ? "bg-primary text-white" : "hover:bg-gray-100"
-                }`}
-              >
-                {pageNum}
-              </button>
-            );
-          })}
-          
-          {page < pages && (
-            <button
-              onClick={() => fetchOrders(page + 1)}
-              className="px-2 sm:px-3 py-1 border rounded hover:bg-gray-100"
-            >
-              Next &raquo;
-            </button>
-          )}
-        </div>
-      )}
+      
     </div>
   );
 };

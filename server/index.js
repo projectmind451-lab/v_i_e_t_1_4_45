@@ -25,10 +25,7 @@ app.use(cookieParser());
 
 // CORS configuration must come before any routes
 const allowedOrigins = [
-  process.env.FRONTEND_URL,
-  'https://wonderful-shortbread-3552e1.netlify.app',
-  'http://localhost:5173',
-  'http://localhost:3000'
+  process.env.FRONTEND_URL
 ].filter(Boolean);  // Remove any undefined values
 
 console.log('Allowed origins:', allowedOrigins);
