@@ -376,7 +376,7 @@ const Orders = () => {
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium truncate">{item.product?.name || "Unknown"}</p>
                         <p className="text-xs text-gray-500">Qty: {item.quantity}</p>
-                        <p className="text-sm font-medium">{formatVND(item.product?.price * item.quantity)}</p>
+                        <p className="text-sm font-medium">{formatVND(item.product?.offerPrice * item.quantity)}</p>
                       </div>
                     </div>
                   ))}
