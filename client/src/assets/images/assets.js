@@ -62,6 +62,7 @@ import brown_rice_image from "./brown_rice_image.png";
 import barley_image from "./barley_image.png";
 import briyani_masala_image from "./Biryani_Masala.png";
 import appalam_image from "./Appalam.jpeg";
+import channa_dal_image from "./Channa_Dal.png";
 // Using Kabuli Channa as a replacement since Black_Channa files are missing
 import coriander_powder from "./Coriander_Powder.png";
 import cumin_powder from "./Cumin_Powder.png";
