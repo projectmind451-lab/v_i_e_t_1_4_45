@@ -13,6 +13,7 @@ const AddProduct = () => {
   const [price, setPrice] = useState("");
   const [offerPrice, setOfferPrice] = useState("");
   const [unit, setUnit] = useState("gm");
+  const [unitValue, setUnitValue] = useState(1);
 
   const [catList, setCatList] = useState(categories.map((c) => c.path));
   const [addingCat, setAddingCat] = useState(false);
@@ -69,6 +70,7 @@ const AddProduct = () => {
       formData.append("price", price);
       formData.append("offerPrice", offerPrice);
       formData.append("unit", unit);
+      formData.append("unitValue", unitValue);
   
       // Append images with the correct field name expected by backend
       selectedImages.forEach((file) => {
@@ -89,6 +91,7 @@ const AddProduct = () => {
         setOfferPrice("");
         setFiles([]);
         setUnit("gm");
+        setUnitValue(1);
       } else {
         toast.error(data.message);
       }
@@ -300,7 +303,7 @@ const AddProduct = () => {
           </div>
           <div className="flex-1 flex flex-col gap-1 w-32">
             <label className="text-base font-medium" htmlFor="unit">
-              Unit
+              Pack Size
             </label>
             <select
               id="unit"
@@ -312,6 +315,22 @@ const AddProduct = () => {
               <option value="kg">kg</option>
               <option value="liter">liter</option>
             </select>
+          </div>
+          <div className="flex-1 flex flex-col gap-1 w-32">
+            <label className="text-base font-medium" htmlFor="unit-value">
+              Number
+            </label>
+            <input
+              id="unit-value"
+              type="number"
+              min="0.001"
+              step="0.001"
+              value={unitValue}
+              onChange={(e) => setUnitValue(e.target.value)}
+              placeholder="1"
+              className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500/40"
+              required
+            />
           </div>
         </div>
 

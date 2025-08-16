@@ -11,14 +11,27 @@ const ProductList = () => {
     name: "",
     category: "",
     offerPrice: "",
+    unitValue: 1,
     unit: "gm",
     image: null,
   });
+  const [query, setQuery] = useState("");
+
+  // Apply client-side search on name or category
+  const filteredProducts = useMemo(() => {
+    const list = products || [];
+    const q = (query || "").trim().toLowerCase();
+    if (!q) return list;
+    return list.filter((p) =>
+      (p.name || "").toLowerCase().includes(q) ||
+      (p.category || "").toLowerCase().includes(q)
+    );
+  }, [products, query]);
   // Derive categories from products to avoid backend dependency
   const derivedCategories = useMemo(() => {
-    const set = new Set((products || []).map(p => (p.category && String(p.category).trim()) || 'Others'));
+    const set = new Set((filteredProducts || []).map(p => (p.category && String(p.category).trim()) || 'Others'));
     return Array.from(set).sort((a, b) => a.localeCompare(b));
-  }, [products]);
+  }, [filteredProducts]);
 
   useEffect(() => {
     fetchProducts();
@@ -65,6 +78,7 @@ const ProductList = () => {
       name: product.name,
       category: product.category,
       offerPrice: product.offerPrice,
+      unitValue: typeof product.unitValue === 'number' ? product.unitValue : 1,
       unit: product.unit || "gm",
       image: null, // file will be selected if changed
     });
@@ -76,6 +90,7 @@ const ProductList = () => {
       updateData.append("name", formData.name);
       updateData.append("category", formData.category);
       updateData.append("offerPrice", formData.offerPrice);
+      updateData.append("unitValue", formData.unitValue);
       if (formData.unit) updateData.append("unit", formData.unit);
       if (formData.image) {
         updateData.append("image", formData.image);
@@ -128,9 +143,9 @@ const ProductList = () => {
           {(derivedCategories.length > 0
             ? derivedCategories.map(cat => ({
                 cat,
-                items: products.filter(p => (p.category || 'Others') === cat),
+                items: filteredProducts.filter(p => (p.category || 'Others') === cat),
               }))
-            : Object.entries(products.reduce((acc, p) => { const c = p.category || 'Others'; (acc[c] ||= []).push(p); return acc; }, {}))
+            : Object.entries(filteredProducts.reduce((acc, p) => { const c = p.category || 'Others'; (acc[c] ||= []).push(p); return acc; }, {}))
                 .map(([cat, items]) => ({ cat, items }))
           ).map(({ cat, items }) => (
             items.length === 0 ? null : (
@@ -182,16 +197,24 @@ const ProductList = () => {
                 />
               ) : (
                 <span>
-                  {formatVND(product.offerPrice)} / {product.unit || 'gm'}
+                  {formatVND(product.offerPrice)} / {(typeof product.unitValue === 'number' ? product.unitValue : 1)} {product.unit || 'gm'}
                 </span>
               )}
             </div>
             {editingProduct === product._id && (
-              <div className="mt-1">
+              <div className="mt-1 flex items-center gap-2">
+                <input
+                  type="number"
+                  min="0.001"
+                  step="0.001"
+                  value={formData.unitValue}
+                  onChange={(e) => setFormData({ ...formData, unitValue: e.target.value })}
+                  className="border p-1 rounded w-24"
+                />
                 <select
                   value={formData.unit}
                   onChange={(e) => setFormData({ ...formData, unit: e.target.value })}
-                  className="border p-1 rounded w-full"
+                  className="border p-1 rounded flex-1"
                 >
                   <option value="gm">gm</option>
                   <option value="kg">kg</option>
@@ -247,7 +270,7 @@ const ProductList = () => {
               <th className="px-4 py-3 font-semibold">Product</th>
               <th className="px-4 py-3 font-semibold hidden sm:table-cell">Category</th>
               <th className="px-4 py-3 font-semibold hidden sm:table-cell">Selling Price</th>
-              <th className="px-4 py-3 font-semibold hidden sm:table-cell">Unit</th>
+              <th className="px-4 py-3 font-semibold hidden sm:table-cell">Pack Size</th>
               <th className="px-4 py-3 font-semibold hidden sm:table-cell">Image</th>
               <th className="px-4 py-3 font-semibold">In Stock</th>
               <th className="px-4 py-3 font-semibold">Actions</th>
@@ -257,9 +280,9 @@ const ProductList = () => {
             {(derivedCategories.length > 0
               ? derivedCategories.map(cat => ({
                   cat,
-                  items: products.filter(p => (p.category || 'Others') === cat),
+                  items: filteredProducts.filter(p => (p.category || 'Others') === cat),
                 }))
-              : Object.entries(products.reduce((acc, p) => { const c = p.category || 'Others'; (acc[c] ||= []).push(p); return acc; }, {}))
+              : Object.entries(filteredProducts.reduce((acc, p) => { const c = p.category || 'Others'; (acc[c] ||= []).push(p); return acc; }, {}))
                   .map(([cat, items]) => ({ cat, items }))
             ).map(({ cat, items }) => (
               items.length === 0 ? null : (
@@ -336,20 +359,30 @@ const ProductList = () => {
                   )}
                 </td>
 
-                {/* Unit */}
+                {/* Pack Size (unitValue + unit) */}
                 <td className="px-3 md:px-4 py-3 hidden sm:table-cell">
                   {editingProduct === product._id ? (
-                    <select
-                      value={formData.unit}
-                      onChange={(e) => setFormData({ ...formData, unit: e.target.value })}
-                      className="border p-1 rounded"
-                    >
-                      <option value="gm">gm</option>
-                      <option value="kg">kg</option>
-                      <option value="liter">liter</option>
-                    </select>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="number"
+                        min="0.001"
+                        step="0.001"
+                        value={formData.unitValue}
+                        onChange={(e) => setFormData({ ...formData, unitValue: e.target.value })}
+                        className="border p-1 rounded w-full max-w-[120px] md:max-w-none"
+                      />
+                      <select
+                        value={formData.unit}
+                        onChange={(e) => setFormData({ ...formData, unit: e.target.value })}
+                        className="border p-1 rounded"
+                      >
+                        <option value="gm">gm</option>
+                        <option value="kg">kg</option>
+                        <option value="liter">liter</option>
+                      </select>
+                    </div>
                   ) : (
-                    <span>{product.unit || 'gm'}</span>
+                    <span>{(typeof product.unitValue === 'number' ? product.unitValue : 1)} {product.unit || 'gm'}</span>
                   )}
                 </td>
 
@@ -519,18 +552,6 @@ export default ProductList;
 //     } catch (error) {
 //       toast.error(error.message);
 //     }
-//   };
-
-//   return (
-//     <div className="flex-1 py-10 flex flex-col justify-between">
-//       <div className="w-full md:p-10 p-4">
-//         <h2 className="pb-4 text-lg font-medium">All Products</h2>
-//         <div className="flex flex-col items-center max-w-4xl w-full overflow-hidden rounded-md bg-white border border-gray-500/20">
-//           <table className="md:table-auto table-fixed w-full overflow-hidden">
-//             <thead className="text-gray-900 text-sm text-left">
-//               <tr>
-//                 <th className="px-4 py-3 font-semibold">Product</th>
-//                 <th className="px-4 py-3 font-semibold">Category</th>
 //                 <th className="px-4 py-3 font-semibold hidden md:block">Selling Price</th>
 //                 <th className="px-4 py-3 font-semibold">In Stock</th>
 //                 <th className="px-4 py-3 font-semibold">Actions</th>

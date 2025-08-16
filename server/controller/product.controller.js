@@ -3,7 +3,7 @@ import Product from "../models/product.model.js";
 // add product :/api/product/add
 export const addProduct = async (req, res) => {
   try {
-    const { name, price, offerPrice, description, category, unit } = req.body;
+    const { name, price, offerPrice, description, category, unit, unitValue } = req.body;
     // const image = req.files?.map((file) => `/uploads/${file.filename}`);
     const image = req.files?.map((file) => file.filename);
     if (
@@ -21,6 +21,13 @@ export const addProduct = async (req, res) => {
       });
     }
 
+    const parsedUnitValue = typeof unitValue !== 'undefined' && unitValue !== null && unitValue !== ''
+      ? Number(unitValue)
+      : undefined;
+    if (parsedUnitValue !== undefined && !(parsedUnitValue > 0)) {
+      return res.status(400).json({ success: false, message: "unitValue must be a positive number" });
+    }
+
     const product = new Product({
       name,
       price,
@@ -28,6 +35,7 @@ export const addProduct = async (req, res) => {
       description,
       category,
       unit: unit && ["kg","gm","liter"].includes(unit) ? unit : undefined,
+      unitValue: parsedUnitValue,
       image,
     });
 
@@ -118,7 +126,7 @@ export const changeStock = async (req, res) => {
 export const updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, price, offerPrice, description, category, inStock, unit } = req.body;
+    const { name, price, offerPrice, description, category, inStock, unit, unitValue } = req.body;
     const image = req.files?.map((file) => file.filename);
 
     // Find existing product
@@ -135,6 +143,13 @@ export const updateProduct = async (req, res) => {
     if (category) product.category = category;
     if (typeof inStock !== "undefined") product.inStock = inStock;
     if (unit && ["kg","gm","liter"].includes(unit)) product.unit = unit;
+    if (typeof unitValue !== 'undefined' && unitValue !== null && unitValue !== '') {
+      const v = Number(unitValue);
+      if (!(v > 0)) {
+        return res.status(400).json({ success: false, message: "unitValue must be a positive number" });
+      }
+      product.unitValue = v;
+    }
     if (image && image.length > 0) product.image = image; // overwrite if new images uploaded
 
     const updatedProduct = await product.save();
