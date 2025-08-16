@@ -13,10 +13,28 @@ const ProductList = () => {
     offerPrice: "",
     image: null,
   });
+  const [categories, setCategories] = useState([]);
 
   useEffect(() => {
     fetchProducts();
   }, []);
+
+  // Load categories from backend to control order and visibility
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const { data } = await axios.get("/api/category");
+        if (mounted && data?.success) {
+          const names = (data.categories || []).map(c => c.name || c.path).filter(Boolean);
+          setCategories(names);
+        }
+      } catch (_) {
+        // silent fallback to client-side grouping
+      }
+    })();
+    return () => { mounted = false; };
+  }, [axios]);
 
   const toggleStock = async (productId, currentStock) => {
     try {
@@ -95,10 +113,21 @@ const ProductList = () => {
     <div className="flex-1 py-6 md:py-10 flex flex-col justify-between">
       <div className="w-full md:p-10 p-3">
         <h2 className="pb-3 md:pb-4 text-base md:text-lg font-medium">All Products</h2>
-        {/* Mobile cards (xs only) */}
-        <div className="sm:hidden space-y-3">
-          {products.map((product) => (
-            <div key={product._id} className="bg-white border border-gray-200 rounded-md p-3 flex gap-3">
+        {/* Mobile cards (xs only) grouped by category */}
+        <div className="sm:hidden space-y-5">
+          {(categories.length > 0
+            ? categories.map(cat => ({
+                cat,
+                items: products.filter(p => (p.category || 'Others') === cat),
+              }))
+            : Object.entries(products.reduce((acc, p) => { const c = p.category || 'Others'; (acc[c] ||= []).push(p); return acc; }, {}))
+                .map(([cat, items]) => ({ cat, items }))
+          ).map(({ cat, items }) => (
+            items.length === 0 ? null : (
+              <div key={cat}>
+                <h3 className="text-lg font-semibold mb-2">{cat}</h3>
+                {items.map((product) => (
+                  <div key={product._id} className="bg-white border border-gray-200 rounded-md p-3 flex gap-3 mb-3">
               <div className="border border-gray-300 rounded p-1.5 shrink-0">
                 <img
                   src={product?.image?.[0] ? getImageUrl(product.image[0]) : "/src/assets/upload_area.png"}
@@ -178,8 +207,11 @@ const ProductList = () => {
             </div>
           </div>
         </div>
-      ))}
-    </div>
+                ))}
+              </div>
+            )
+          ))}
+        </div>
 
     {/* Desktop/tablet table (sm and up) */}
     <div className="hidden sm:block overflow-x-auto">
@@ -196,8 +228,21 @@ const ProductList = () => {
             </tr>
           </thead>
           <tbody className="text-gray-600">
-            {Array.isArray(products) && products.map((product) => (
-              <tr key={product._id} className="border-t border-gray-500/20">
+            {(categories.length > 0
+              ? categories.map(cat => ({
+                  cat,
+                  items: products.filter(p => (p.category || 'Others') === cat),
+                }))
+              : Object.entries(products.reduce((acc, p) => { const c = p.category || 'Others'; (acc[c] ||= []).push(p); return acc; }, {}))
+                  .map(([cat, items]) => ({ cat, items }))
+            ).map(({ cat, items }) => (
+              items.length === 0 ? null : (
+                <>
+                  <tr key={`head-${cat}`} className="border-t border-gray-500/30 bg-gray-50">
+                    <td colSpan={6} className="px-4 py-2 font-semibold text-gray-800">{cat}</td>
+                  </tr>
+                  {items.map(product => (
+                    <tr key={product._id} className="border-t border-gray-500/20">
                 {/* Product */}
                 <td className="px-3 md:px-4 py-3">
                   <div className="flex items-center gap-3 min-w-0">
@@ -304,6 +349,9 @@ const ProductList = () => {
                   </div>
                 </td>
               </tr>
+                  ))}
+                </>
+              )
             ))}
           </tbody>
         </table>

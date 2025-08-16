@@ -6,11 +6,6 @@ import { useAddress } from "../context/AddressContext";
 import { getImageUrl } from "../utils/config";
 
 const Cart = () => {
-  // Shipping logic
-  const SHIPPING_FEE = 30000; // VND
-  const FREE_SHIPPING_THRESHOLD = 500000; // VND
-  const cartSubtotal = () => totalCartAmount();
-  const computedShipping = cartSubtotal() >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
   const {
     products,
     navigate,
@@ -24,6 +19,12 @@ const Cart = () => {
     user,
     backendUrl,
   } = useAppContext();
+
+  // Shipping logic (must come after totalCartAmount is available)
+  const SHIPPING_FEE = 30000; // VND
+  const FREE_SHIPPING_THRESHOLD = 500000; // VND
+  const cartSubtotal = () => totalCartAmount();
+  const computedShipping = cartSubtotal() >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
 
   // State to store the products in the cart
   const [cartArray, setCartArray] = useState([]);
