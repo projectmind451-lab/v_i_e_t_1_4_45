@@ -25,7 +25,8 @@ app.use(cookieParser());
 
 // CORS configuration must come before any routes
 const allowedOrigins = [
-  process.env.FRONTEND_URL
+  process.env.FRONTEND_URL,
+  process.env.FRONTEND_URL_WWW
 ].filter(Boolean);  // Remove any undefined values
 
 console.log('Allowed origins:', allowedOrigins);
@@ -217,22 +218,31 @@ if (!fs.existsSync(imagesPath)) {
 }
 
 // Serve static files with proper CORS and caching
-app.use("/uploads/images", 
-  cors({ 
-    origin: [process.env.FRONTEND_URL],
-    credentials: true
-  }), 
+app.use(
+  "/uploads/images",
+  cors({
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      return callback(new Error("Not allowed by CORS"));
+    },
+    credentials: true,
+  }),
   express.static(imagesPath, {
-    setHeaders: (res, path) => {
+    setHeaders: (res, filePath) => {
       // Set proper cache control headers for images
-      if (path.endsWith('.png') || path.endsWith('.jpg') || path.endsWith('.jpeg')) {
+      if (filePath.endsWith('.png') || filePath.endsWith('.jpg') || filePath.endsWith('.jpeg') || filePath.endsWith('.webp') || filePath.endsWith('.gif')) {
         res.setHeader('Cache-Control', 'public, max-age=31536000');
       }
-      // Allow CORS for images
-      res.header('Access-Control-Allow-Origin', process.env.FRONTEND_URL || '');
-      res.header('Access-Control-Allow-Methods', 'GET');
-      res.header('Access-Control-Allow-Headers', 'Content-Type');
-    }
+      // Allow CORS for images dynamically
+      const requestOrigin = res.req.headers.origin;
+      if (requestOrigin && allowedOrigins.includes(requestOrigin)) {
+        res.setHeader('Access-Control-Allow-Origin', requestOrigin);
+        res.setHeader('Vary', 'Origin');
+      }
+      res.setHeader('Access-Control-Allow-Methods', 'GET');
+      res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    },
   })
 );
 

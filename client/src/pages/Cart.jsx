@@ -6,6 +6,11 @@ import { useAddress } from "../context/AddressContext";
 import { getImageUrl } from "../utils/config";
 
 const Cart = () => {
+  // Shipping logic
+  const SHIPPING_FEE = 30000; // VND
+  const FREE_SHIPPING_THRESHOLD = 500000; // VND
+  const cartSubtotal = () => totalCartAmount();
+  const computedShipping = cartSubtotal() >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
   const {
     products,
     navigate,
@@ -242,18 +247,25 @@ const Cart = () => {
             <span>Price</span>
             <span>{formatVND(totalCartAmount())}</span>
           </p>
-          <p className="flex justify-between">
-            <span>Shipping Fee</span>
-            <span className="text-green-600">Free</span>
-          </p>
-          <p className="flex justify-between">
-            <span>Tax (2%)</span>
-            <span>{formatVND(totalCartAmount() * 0.02)}</span>
-          </p>
+          <div>
+            <p className="flex justify-between">
+              <span>Shipping Fee</span>
+              <span>
+                {computedShipping === 0 ? (
+                  <span className="text-green-600">Free</span>
+                ) : (
+                  formatVND(computedShipping)
+                )}
+              </span>
+            </p>
+            <p className="text-xs text-gray-500 mt-1">
+              Free shipping on orders over {formatVND(FREE_SHIPPING_THRESHOLD)}
+            </p>
+          </div>
           <p className="flex justify-between text-lg font-medium mt-3">
             <span>Total Amount:</span>
             <span>
-              {formatVND(totalCartAmount() * 1.02)}
+              {formatVND(cartSubtotal() + computedShipping)}
             </span>
           </p>
         </div>

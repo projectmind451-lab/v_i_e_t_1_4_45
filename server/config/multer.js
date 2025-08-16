@@ -1,6 +1,6 @@
 import multer from "multer";
 const storage = multer.diskStorage({
-  destination: "uploads",
+  destination: "uploads/images",
   filename: (req, file, cb) => {
     return cb(null, `${Date.now()}${file.originalname}`);
   },

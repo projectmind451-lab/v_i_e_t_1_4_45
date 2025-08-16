@@ -15,8 +15,13 @@ export const getImageUrl = (path) => {
     return path;
   }
   
-  // Remove any leading slashes or uploads/images from the path
-  const cleanPath = path.replace(/^[\/]*(uploads[\/]?images[\/]?)?/, '');
+  // Remove any leading slashes or uploads/ or uploads/images/ from the path
+  // Handles legacy records stored as 'uploads/<file>' and new ones as just '<file>' or 'uploads/images/<file>'
+  const cleanPath = path
+    .replace(/^\/+/, '')
+    .replace(/^uploads\//, '')
+    .replace(/^images\//, '')
+    .replace(/^uploads\/images\//, '');
   
   // For both development and production, use the /uploads/images path
   return `${getBackendUrl()}/uploads/images/${cleanPath}`;

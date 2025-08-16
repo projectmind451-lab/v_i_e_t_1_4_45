@@ -146,7 +146,7 @@ const Orders = () => {
             className="flex-1 border p-2 rounded text-sm sm:text-base"
           />
           <button
-            onClick={() => { setPage(1); fetchOrders(1); }}
+            onClick={() => { setPage(1); }}
             className="bg-primary hover:bg-[color:var(--color-primary-600)] text-white px-4 py-2 rounded whitespace-nowrap"
           >
             Search
@@ -207,10 +207,12 @@ const Orders = () => {
                             alt="product"
                             className="w-10 h-10 object-cover rounded"
                           />
-                          <span className="truncate max-w-[120px]">
-                            {item.product?.name || "Unknown"}
-                            {item.quantity > 1 && ` x${item.quantity}`}
-                          </span>
+                          <div className="min-w-0">
+                            <p className="text-sm font-medium break-words whitespace-normal">
+                              {item.product?.name || "Unknown"}
+                            </p>
+                            <p className="text-xs text-gray-600">Qty: {item.quantity}</p>
+                          </div>
                         </div>
                       ))}
                     </td>

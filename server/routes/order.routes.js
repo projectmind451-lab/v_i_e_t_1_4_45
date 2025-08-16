@@ -50,8 +50,9 @@ router.get("/seller", authSeller, async (req, res) => {
     const total = await Order.countDocuments(query);
     console.log("Total orders found:", total);
 
-    // Get orders without population first to avoid ObjectId cast errors
+    // Get orders with only required fields to reduce payload
     let orders = await Order.find(query)
+      .select('items address amount status isPaid createdAt paymentType')
       .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(Number(limit))
@@ -59,83 +60,57 @@ router.get("/seller", authSeller, async (req, res) => {
 
     console.log("Orders fetched:", orders.length);
 
-    // Manually populate with error handling
+    // Batch populate addresses and products to avoid N+1 queries
     const mongoose = await import('mongoose');
     const Address = (await import('../models/address.model.js')).default;
     const Product = (await import('../models/product.model.js')).default;
 
-    for (let order of orders) {
-      // Safely populate address
-      try {
-        if (order.address && mongoose.Types.ObjectId.isValid(order.address)) {
-          const address = await Address.findById(order.address).lean();
-          order.address = address || {
-            firstName: 'Unknown',
-            lastName: 'Customer',
-            email: 'unknown@email.com',
-            phone: 'N/A',
-            street: 'N/A',
-            city: 'N/A',
-            state: 'N/A',
-            zipCode: 'N/A',
-            country: 'N/A'
-          };
-        } else {
-          console.warn(`Invalid address ID for order ${order._id}:`, order.address);
-          order.address = {
-            firstName: 'Unknown',
-            lastName: 'Customer',
-            email: 'unknown@email.com',
-            phone: 'N/A',
-            street: 'N/A',
-            city: 'N/A',
-            state: 'N/A',
-            zipCode: 'N/A',
-            country: 'N/A'
-          };
-        }
-      } catch (addressError) {
-        console.error(`Error populating address for order ${order._id}:`, addressError);
-        order.address = {
-          firstName: 'Unknown',
-          lastName: 'Customer',
-          email: 'unknown@email.com',
-          phone: 'N/A',
-          street: 'N/A',
-          city: 'N/A',
-          state: 'N/A',
-          zipCode: 'N/A',
-          country: 'N/A'
-        };
-      }
+    const addressIds = [
+      ...new Set(
+        orders
+          .map(o => o.address)
+          .filter(id => id && mongoose.Types.ObjectId.isValid(id))
+          .map(id => id.toString())
+      ),
+    ];
+    const productIds = [
+      ...new Set(
+        orders.flatMap(o => (o.items || [])
+          .map(i => i.product)
+          .filter(id => id && mongoose.Types.ObjectId.isValid(id))
+          .map(id => id.toString())
+        )
+      ),
+    ];
 
-      // Safely populate products
-      if (order.items && Array.isArray(order.items)) {
-        for (let item of order.items) {
-          try {
-            if (item.product && mongoose.Types.ObjectId.isValid(item.product)) {
-              const product = await Product.findById(item.product).select('name image offerPrice').lean();
-              item.product = product || {
-                name: 'Unknown Product',
-                image: [],
-                offerPrice: 0
-              };
-            } else {
-              console.warn(`Invalid product ID for order ${order._id}:`, item.product);
-              item.product = {
-                name: 'Unknown Product',
-                image: [],
-                offerPrice: 0
-              };
-            }
-          } catch (productError) {
-            console.error(`Error populating product for order ${order._id}:`, productError);
-            item.product = {
-              name: 'Unknown Product',
-              image: [],
-              offerPrice: 0
-            };
-          }
+    const [addressDocs, productDocs] = await Promise.all([
+      addressIds.length ? Address.find({ _id: { $in: addressIds } }).lean() : [],
+      productIds.length ? Product.find({ _id: { $in: productIds } }).select('name image offerPrice').lean() : [],
+    ]);
+
+    const addressMap = new Map(addressDocs.map(a => [a._id.toString(), a]));
+    const productMap = new Map(productDocs.map(p => [p._id.toString(), p]));
+
+    const defaultAddress = {
+      firstName: 'Unknown',
+      lastName: 'Customer',
+      email: 'unknown@email.com',
+      phone: 'N/A',
+      street: 'N/A',
+      city: 'N/A',
+      state: 'N/A',
+      zipCode: 'N/A',
+      country: 'N/A',
+    };
+    const defaultProduct = { name: 'Unknown Product', image: [], offerPrice: 0 };
+
+    for (const order of orders) {
+      const addrId = order.address && order.address.toString();
+      order.address = (addrId && addressMap.get(addrId)) || defaultAddress;
+      if (Array.isArray(order.items)) {
+        for (const item of order.items) {
+          const pid = item.product && item.product.toString();
+          item.product = (pid && productMap.get(pid)) || defaultProduct;
         }
       }
     }

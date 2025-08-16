@@ -18,7 +18,7 @@ const AddProduct = () => {
   const [newCat, setNewCat] = useState("");
   const [catLoading, setCatLoading] = useState(false);
 
-  const loadedRef = useRef(true);
+  const loadedRef = useRef(false);
   const apiAvailableRef = useRef(false);
 
   useEffect(() => {
