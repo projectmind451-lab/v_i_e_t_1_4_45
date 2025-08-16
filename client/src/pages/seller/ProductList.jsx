@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, Fragment } from "react";
 import { formatVND } from "../../utils/currency";
 import toast from "react-hot-toast";
 import { useAppContext } from "../../context/AppContext";
@@ -98,9 +98,27 @@ const ProductList = () => {
     return <div className="p-4">Loading products...</div>;
   }
 
+  // Letters index A-Z and '#'
+  const letters = useMemo(() => Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i)).concat('#'), []);
+  const [activeLetter, setActiveLetter] = useState(null);
+
+  const getLetter = (name) => {
+    const ch = (name || '').trim().charAt(0).toUpperCase();
+    return ch >= 'A' && ch <= 'Z' ? ch : '#';
+  };
+
+  const scrollToLetter = (letter) => {
+    const el = document.getElementById(`letter-${letter}`);
+    if (el) {
+      setActiveLetter(letter);
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setTimeout(() => setActiveLetter(null), 1200);
+    }
+  };
+
   return (
     <div className="flex-1 py-6 md:py-10 flex flex-col justify-between">
-      <div className="w-full md:p-10 p-3">
+      <div className="w-full md:p-10 p-3 relative">
         <h2 className="pb-3 md:pb-4 text-base md:text-lg font-medium">All Products</h2>
         {/* Mobile cards (xs only) grouped by category */}
         <div className="sm:hidden space-y-5">
@@ -204,9 +222,9 @@ const ProductList = () => {
 
     {/* Desktop/tablet table (sm and up) */}
     <div className="hidden sm:block overflow-x-auto">
-      <div className="flex flex-col items-center min-w-full rounded-md bg-white border border-gray-200">
+      <div className="flex flex-col items-center min-w-full rounded-md bg-white border border-gray-200 relative">
         <table className="w-full min-w-[560px] text-xs md:text-sm">
-          <thead className="text-gray-900 text-xs md:text-sm text-left">
+          <thead className="sticky top-0 bg-white z-10 text-gray-900 text-xs md:text-sm text-left border-b">
             <tr>
               <th className="px-4 py-3 font-semibold">Product</th>
               <th className="px-4 py-3 font-semibold hidden sm:table-cell">Category</th>
@@ -226,12 +244,16 @@ const ProductList = () => {
                   .map(([cat, items]) => ({ cat, items }))
             ).map(({ cat, items }) => (
               items.length === 0 ? null : (
-                <>
+                <Fragment key={`group-${cat}`}>
                   <tr key={`head-${cat}`} className="border-t border-gray-500/30 bg-gray-50">
                     <td colSpan={6} className="px-4 py-2 font-semibold text-gray-800">{cat}</td>
                   </tr>
-                  {items.map(product => (
-                    <tr key={product._id} className="border-t border-gray-500/20">
+                  {items.map((product, idx) => {
+                    const letter = getLetter(product.name);
+                    const prevLetter = idx > 0 ? getLetter(items[idx - 1].name) : null;
+                    const rowId = idx === 0 || letter !== prevLetter ? `letter-${letter}` : undefined;
+                    return (
+                      <tr id={rowId} key={product._id} className={`border-t border-gray-500/20 even:bg-gray-50 hover:bg-gray-50 ${rowId ? 'scroll-mt-28' : ''}`}>
                 {/* Product */}
                 <td className="px-3 md:px-4 py-3">
                   <div className="flex items-center gap-3 min-w-0">
@@ -337,24 +359,53 @@ const ProductList = () => {
                     )}
                   </div>
                 </td>
-              </tr>
-                  ))}
-                </>
+                      </tr>
+                    );
+                  })}
+                </Fragment>
               )
             ))}
           </tbody>
         </table>
+        {/* Right side A–Z index - Compact */}
+        <div className="hidden md:flex flex-col items-center fixed right-3 top-1/2 -translate-y-1/2 z-20 max-h-[80vh] overflow-y-auto py-2">
+          <div className="flex flex-col items-center p-1 rounded-xl bg-white/80 backdrop-blur-sm shadow-lg border border-gray-100">
+            {letters.map(l => {
+              const isActive = activeLetter === l;
+              return (
+                <button
+                  key={l}
+                  onClick={() => scrollToLetter(l)}
+                  className={`relative w-7 h-7 text-xs font-medium rounded-full flex items-center justify-center transition-all duration-300 ${
+                    isActive 
+                      ? 'bg-primary text-white scale-110 shadow-md' 
+                      : 'text-gray-600 hover:text-primary hover:bg-primary/10 hover:scale-105'
+                  }`}
+                  aria-label={`Jump to ${l}`}
+                  title={`Jump to ${l}`}
+                  aria-current={isActive ? 'true' : undefined}
+                >
+                  {l}
+                  {isActive && (
+                    <span className="absolute -left-8 px-2 py-1 bg-primary text-white text-xs rounded whitespace-nowrap">
+                      {l}
+                      <span className="absolute right-0 top-1/2 w-2 h-2 bg-primary transform translate-x-1/2 -translate-y-1/2 rotate-45" />
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </div>
       </div>
     </div>
   </div>
-</div>
+  </div>
 
   );
 };
 
 export default ProductList;
-
-
 
 
 

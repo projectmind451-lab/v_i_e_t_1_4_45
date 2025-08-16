@@ -50,7 +50,7 @@ const SellerLayout = () => {
         </div>
       </div>
       <div className="flex">
-        <div className="md:w-64 w-16 border-r text-base border-gray-200 pt-3 md:pt-4 flex flex-col max-h-[calc(100vh-56px)] md:max-h-[calc(100vh-64px)] overflow-y-auto">
+        <div className="md:w-64 w-16 border-r text-base border-gray-200 pt-3 md:pt-4 flex flex-col sticky top-[56px] md:top-[64px] h-[calc(100vh-56px)] md:h-[calc(100vh-64px)] overflow-y-auto">
           {sidebarLinks.map((item) => (
             <NavLink
               to={item.path}
