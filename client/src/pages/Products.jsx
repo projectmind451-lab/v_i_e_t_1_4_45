@@ -1,11 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import ProductCard from "../components/ProductCard";
 import { useAppContext } from "../context/AppContext.jsx";
 
 const Products = () => {
-  const { products, searchQuery, axios } = useAppContext();
+  const { products, searchQuery } = useAppContext();
   const [filteredProducts, setFilteredProducts] = useState([]);
-  const [categories, setCategories] = useState([]);
 
   useEffect(() => {
     // Step 1: Only take products that are in stock
@@ -23,67 +22,67 @@ const Products = () => {
     }
   }, [products, searchQuery]);
 
-  // Load categories from backend seller categories
-  useEffect(() => {
-    let mounted = true;
-    (async () => {
-      try {
-        const { data } = await axios.get("/api/category");
-        if (data?.success && mounted) {
-          setCategories((data.categories || []).map(c => c.name || c.path).filter(Boolean));
-        }
-      } catch (e) {
-        // Silent fallback to client-side grouping
-      }
-    })();
-    return () => { mounted = false; };
-  }, [axios]);
+  // Derive categories from the filtered product list (avoids backend dependency)
+  const derivedCategories = useMemo(() => {
+    const set = new Set(
+      filteredProducts.map((p) => (p.category && String(p.category).trim()) || "Others")
+    );
+    return Array.from(set).sort((a, b) => a.localeCompare(b));
+  }, [filteredProducts]);
+
+  const slugify = (str) =>
+    (str || "Others")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "");
 
   return (
     <div className="mt-16">
       <h1 className="text-3xl lg:text-4xl font-medium">All Products</h1>
 
-      {/* Prefer backend categories order if available */}
-      {categories.length > 0
-        ? (
-          categories.map((cat) => {
-            const items = filteredProducts.filter(p => (p.category || 'Others') === cat);
+      <div className="mt-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* Fixed sidebar with categories */}
+        <aside className="lg:col-span-3">
+          <div className="lg:sticky lg:top-20 bg-white border border-gray-200 rounded-md p-3">
+            <h3 className="text-base font-semibold mb-2">Categories</h3>
+            <nav className="space-y-1">
+              {derivedCategories.map((cat) => (
+                <a
+                  key={cat}
+                  href={`#cat-${slugify(cat)}`}
+                  className="block px-2 py-1 rounded hover:bg-gray-100 text-gray-700"
+                >
+                  {cat}
+                </a>
+              ))}
+            </nav>
+          </div>
+        </aside>
+
+        {/* Product sections */}
+        <main className="lg:col-span-9">
+          {derivedCategories.map((cat) => {
+            const items = filteredProducts.filter(
+              (p) => (p.category && String(p.category).trim()) === cat || (!p.category && cat === "Others")
+            );
             if (items.length === 0) return null;
             return (
-              <section key={cat} className="mt-8">
+              <section key={cat} id={`cat-${slugify(cat)}`} className="mt-2 scroll-mt-24">
                 <h2 className="text-2xl font-semibold mb-3">{cat}</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 items-center justify-center">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 gap-4 items-center justify-center">
                   {items.map((product, idx) => (
                     <ProductCard key={`${cat}-${product._id || idx}`} product={product} />
                   ))}
                 </div>
               </section>
             );
-          })
-        )
-        : (
-          // Fallback: group by product category present in client
-          Object.entries(
-            filteredProducts.reduce((acc, p) => {
-              const cat = p.category || 'Others';
-              if (!acc[cat]) acc[cat] = [];
-              acc[cat].push(p);
-              return acc;
-            }, {})
-          ).map(([cat, items]) => (
-            <section key={cat} className="mt-8">
-              <h2 className="text-2xl font-semibold mb-3">{cat}</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 items-center justify-center">
-                {items.map((product, idx) => (
-                  <ProductCard key={`${cat}-${product._id || idx}`} product={product} />
-                ))}
-              </div>
-            </section>
-          ))
-        )}
+          })}
+        </main>
+      </div>
     </div>
   );
-};
+}
+;
 
 export default Products;
 

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { formatVND } from "../../utils/currency";
 import toast from "react-hot-toast";
 import { useAppContext } from "../../context/AppContext";
@@ -13,28 +13,17 @@ const ProductList = () => {
     offerPrice: "",
     image: null,
   });
-  const [categories, setCategories] = useState([]);
+  // Derive categories from products to avoid backend dependency
+  const derivedCategories = useMemo(() => {
+    const set = new Set((products || []).map(p => (p.category && String(p.category).trim()) || 'Others'));
+    return Array.from(set).sort((a, b) => a.localeCompare(b));
+  }, [products]);
 
   useEffect(() => {
     fetchProducts();
   }, []);
 
-  // Load categories from backend to control order and visibility
-  useEffect(() => {
-    let mounted = true;
-    (async () => {
-      try {
-        const { data } = await axios.get("/api/category");
-        if (mounted && data?.success) {
-          const names = (data.categories || []).map(c => c.name || c.path).filter(Boolean);
-          setCategories(names);
-        }
-      } catch (_) {
-        // silent fallback to client-side grouping
-      }
-    })();
-    return () => { mounted = false; };
-  }, [axios]);
+  // (No category fetch: backend has no /api/category route on Render)
 
   const toggleStock = async (productId, currentStock) => {
     try {
@@ -115,8 +104,8 @@ const ProductList = () => {
         <h2 className="pb-3 md:pb-4 text-base md:text-lg font-medium">All Products</h2>
         {/* Mobile cards (xs only) grouped by category */}
         <div className="sm:hidden space-y-5">
-          {(categories.length > 0
-            ? categories.map(cat => ({
+          {(derivedCategories.length > 0
+            ? derivedCategories.map(cat => ({
                 cat,
                 items: products.filter(p => (p.category || 'Others') === cat),
               }))
@@ -228,8 +217,8 @@ const ProductList = () => {
             </tr>
           </thead>
           <tbody className="text-gray-600">
-            {(categories.length > 0
-              ? categories.map(cat => ({
+            {(derivedCategories.length > 0
+              ? derivedCategories.map(cat => ({
                   cat,
                   items: products.filter(p => (p.category || 'Others') === cat),
                 }))
