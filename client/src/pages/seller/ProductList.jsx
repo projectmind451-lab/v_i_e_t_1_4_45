@@ -11,6 +11,7 @@ const ProductList = () => {
     name: "",
     category: "",
     offerPrice: "",
+    unit: "gm",
     image: null,
   });
   // Derive categories from products to avoid backend dependency
@@ -64,6 +65,7 @@ const ProductList = () => {
       name: product.name,
       category: product.category,
       offerPrice: product.offerPrice,
+      unit: product.unit || "gm",
       image: null, // file will be selected if changed
     });
   };
@@ -74,6 +76,7 @@ const ProductList = () => {
       updateData.append("name", formData.name);
       updateData.append("category", formData.category);
       updateData.append("offerPrice", formData.offerPrice);
+      if (formData.unit) updateData.append("unit", formData.unit);
       if (formData.image) {
         updateData.append("image", formData.image);
       }
@@ -178,9 +181,23 @@ const ProductList = () => {
                   className="border p-1 rounded w-full"
                 />
               ) : (
-                <span>{formatVND(product.offerPrice)}</span>
+                <span>
+                  {formatVND(product.offerPrice)} / {product.unit || 'gm'}
+                </span>
               )}
             </div>
+            {editingProduct === product._id && (
+              <div className="mt-1">
+                <select
+                  value={formData.unit}
+                  onChange={(e) => setFormData({ ...formData, unit: e.target.value })}
+                  className="border p-1 rounded w-full"
+                >
+                  <option value="gm">gm</option>
+                  <option value="kg">kg</option>
+                </select>
+              </div>
+            )}
             {editingProduct === product._id && (
               <div className="mt-2">
                 <input type="file" onChange={(e) => setFormData({ ...formData, image: e.target.files[0] })} />
@@ -306,14 +323,24 @@ const ProductList = () => {
                 {/* Selling Price */}
                 <td className="px-3 md:px-4 py-3 hidden sm:table-cell">
                   {editingProduct === product._id ? (
-                    <input
-                      type="number"
-                      value={formData.offerPrice}
-                      onChange={(e) => setFormData({ ...formData, offerPrice: e.target.value })}
-                      className="border p-1 rounded w-full max-w-[120px] md:max-w-none"
-                    />
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="number"
+                        value={formData.offerPrice}
+                        onChange={(e) => setFormData({ ...formData, offerPrice: e.target.value })}
+                        className="border p-1 rounded w-full max-w-[120px] md:max-w-none"
+                      />
+                      <select
+                        value={formData.unit}
+                        onChange={(e) => setFormData({ ...formData, unit: e.target.value })}
+                        className="border p-1 rounded"
+                      >
+                        <option value="gm">gm</option>
+                        <option value="kg">kg</option>
+                      </select>
+                    </div>
                   ) : (
-                    formatVND(product.offerPrice)
+                    <span>{formatVND(product.offerPrice)} / {product.unit || 'gm'}</span>
                   )}
                 </td>
 

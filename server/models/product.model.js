@@ -16,6 +16,11 @@ const productSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  unit: {
+    type: String,
+    enum: ["kg", "gm"],
+    default: "gm",
+  },
   image: {
     type: Array,
     required: true,

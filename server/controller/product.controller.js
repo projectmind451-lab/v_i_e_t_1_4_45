@@ -3,7 +3,7 @@ import Product from "../models/product.model.js";
 // add product :/api/product/add
 export const addProduct = async (req, res) => {
   try {
-    const { name, price, offerPrice, description, category } = req.body;
+    const { name, price, offerPrice, description, category, unit } = req.body;
     // const image = req.files?.map((file) => `/uploads/${file.filename}`);
     const image = req.files?.map((file) => file.filename);
     if (
@@ -27,6 +27,7 @@ export const addProduct = async (req, res) => {
       offerPrice,
       description,
       category,
+      unit: unit && ["kg","gm"].includes(unit) ? unit : undefined,
       image,
     });
 
@@ -117,7 +118,7 @@ export const changeStock = async (req, res) => {
 export const updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, price, offerPrice, description, category, inStock } = req.body;
+    const { name, price, offerPrice, description, category, inStock, unit } = req.body;
     const image = req.files?.map((file) => file.filename);
 
     // Find existing product
@@ -133,6 +134,7 @@ export const updateProduct = async (req, res) => {
     if (description) product.description = description;
     if (category) product.category = category;
     if (typeof inStock !== "undefined") product.inStock = inStock;
+    if (unit && ["kg","gm"].includes(unit)) product.unit = unit;
     if (image && image.length > 0) product.image = image; // overwrite if new images uploaded
 
     const updatedProduct = await product.save();
