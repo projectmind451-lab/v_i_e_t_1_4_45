@@ -11,8 +11,6 @@ const ProductList = () => {
     name: "",
     category: "",
     offerPrice: "",
-    unitValue: 1,
-    unit: "gm",
     image: null,
   });
   const [query, setQuery] = useState("");
@@ -78,8 +76,6 @@ const ProductList = () => {
       name: product.name,
       category: product.category,
       offerPrice: product.offerPrice,
-      unitValue: typeof product.unitValue === 'number' ? product.unitValue : 1,
-      unit: product.unit || "gm",
       image: null, // file will be selected if changed
     });
   };
@@ -90,8 +86,6 @@ const ProductList = () => {
       updateData.append("name", formData.name);
       updateData.append("category", formData.category);
       updateData.append("offerPrice", formData.offerPrice);
-      updateData.append("unitValue", formData.unitValue);
-      if (formData.unit) updateData.append("unit", formData.unit);
       if (formData.image) {
         updateData.append("image", formData.image);
       }
@@ -197,30 +191,13 @@ const ProductList = () => {
                 />
               ) : (
                 <span>
-                  {formatVND(product.offerPrice)} / {(typeof product.unitValue === 'number' ? product.unitValue : 1)} {product.unit || 'gm'}
+                  {formatVND(product.offerPrice)}
                 </span>
               )}
             </div>
+            
             {editingProduct === product._id && (
-              <div className="mt-1 flex items-center gap-2">
-                <input
-                  type="number"
-                  min="0.001"
-                  step="0.001"
-                  value={formData.unitValue}
-                  onChange={(e) => setFormData({ ...formData, unitValue: e.target.value })}
-                  className="border p-1 rounded w-24"
-                />
-                <select
-                  value={formData.unit}
-                  onChange={(e) => setFormData({ ...formData, unit: e.target.value })}
-                  className="border p-1 rounded flex-1"
-                >
-                  <option value="gm">gm</option>
-                  <option value="kg">kg</option>
-                  <option value="liter">liter</option>
-                </select>
-              </div>
+              <div className="mt-1" />
             )}
             {editingProduct === product._id && (
               <div className="mt-2">
@@ -270,7 +247,6 @@ const ProductList = () => {
               <th className="px-4 py-3 font-semibold">Product</th>
               <th className="px-4 py-3 font-semibold hidden sm:table-cell">Category</th>
               <th className="px-4 py-3 font-semibold hidden sm:table-cell">Selling Price</th>
-              <th className="px-4 py-3 font-semibold hidden sm:table-cell">Pack Size</th>
               <th className="px-4 py-3 font-semibold hidden sm:table-cell">Image</th>
               <th className="px-4 py-3 font-semibold">In Stock</th>
               <th className="px-4 py-3 font-semibold">Actions</th>
@@ -288,7 +264,7 @@ const ProductList = () => {
               items.length === 0 ? null : (
                 <Fragment key={`group-${cat}`}>
                   <tr key={`head-${cat}`} className="border-t border-gray-500/30 bg-gray-50">
-                    <td colSpan={7} className="px-4 py-2 font-semibold text-gray-800">{cat}</td>
+                    <td colSpan={6} className="px-4 py-2 font-semibold text-gray-800">{cat}</td>
                   </tr>
                   {items.map((product, idx) => {
                     const letter = getLetter(product.name);
@@ -359,32 +335,8 @@ const ProductList = () => {
                   )}
                 </td>
 
-                {/* Pack Size (unitValue + unit) */}
-                <td className="px-3 md:px-4 py-3 hidden sm:table-cell">
-                  {editingProduct === product._id ? (
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="number"
-                        min="0.001"
-                        step="0.001"
-                        value={formData.unitValue}
-                        onChange={(e) => setFormData({ ...formData, unitValue: e.target.value })}
-                        className="border p-1 rounded w-full max-w-[120px] md:max-w-none"
-                      />
-                      <select
-                        value={formData.unit}
-                        onChange={(e) => setFormData({ ...formData, unit: e.target.value })}
-                        className="border p-1 rounded"
-                      >
-                        <option value="gm">gm</option>
-                        <option value="kg">kg</option>
-                        <option value="liter">liter</option>
-                      </select>
-                    </div>
-                  ) : (
-                    <span>{(typeof product.unitValue === 'number' ? product.unitValue : 1)} {product.unit || 'gm'}</span>
-                  )}
-                </td>
+
+                
 
                 {/* Image Upload */}
                 <td className="px-3 md:px-4 py-3 hidden sm:table-cell">
