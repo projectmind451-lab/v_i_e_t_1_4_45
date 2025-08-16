@@ -27,7 +27,7 @@ export const addProduct = async (req, res) => {
       offerPrice,
       description,
       category,
-      unit: unit && ["kg","gm"].includes(unit) ? unit : undefined,
+      unit: unit && ["kg","gm","liter"].includes(unit) ? unit : undefined,
       image,
     });
 
@@ -134,7 +134,7 @@ export const updateProduct = async (req, res) => {
     if (description) product.description = description;
     if (category) product.category = category;
     if (typeof inStock !== "undefined") product.inStock = inStock;
-    if (unit && ["kg","gm"].includes(unit)) product.unit = unit;
+    if (unit && ["kg","gm","liter"].includes(unit)) product.unit = unit;
     if (image && image.length > 0) product.image = image; // overwrite if new images uploaded
 
     const updatedProduct = await product.save();

@@ -195,6 +195,7 @@ const ProductList = () => {
                 >
                   <option value="gm">gm</option>
                   <option value="kg">kg</option>
+                  <option value="liter">liter</option>
                 </select>
               </div>
             )}
@@ -246,6 +247,7 @@ const ProductList = () => {
               <th className="px-4 py-3 font-semibold">Product</th>
               <th className="px-4 py-3 font-semibold hidden sm:table-cell">Category</th>
               <th className="px-4 py-3 font-semibold hidden sm:table-cell">Selling Price</th>
+              <th className="px-4 py-3 font-semibold hidden sm:table-cell">Unit</th>
               <th className="px-4 py-3 font-semibold hidden sm:table-cell">Image</th>
               <th className="px-4 py-3 font-semibold">In Stock</th>
               <th className="px-4 py-3 font-semibold">Actions</th>
@@ -263,7 +265,7 @@ const ProductList = () => {
               items.length === 0 ? null : (
                 <Fragment key={`group-${cat}`}>
                   <tr key={`head-${cat}`} className="border-t border-gray-500/30 bg-gray-50">
-                    <td colSpan={6} className="px-4 py-2 font-semibold text-gray-800">{cat}</td>
+                    <td colSpan={7} className="px-4 py-2 font-semibold text-gray-800">{cat}</td>
                   </tr>
                   {items.map((product, idx) => {
                     const letter = getLetter(product.name);
@@ -323,24 +325,31 @@ const ProductList = () => {
                 {/* Selling Price */}
                 <td className="px-3 md:px-4 py-3 hidden sm:table-cell">
                   {editingProduct === product._id ? (
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="number"
-                        value={formData.offerPrice}
-                        onChange={(e) => setFormData({ ...formData, offerPrice: e.target.value })}
-                        className="border p-1 rounded w-full max-w-[120px] md:max-w-none"
-                      />
-                      <select
-                        value={formData.unit}
-                        onChange={(e) => setFormData({ ...formData, unit: e.target.value })}
-                        className="border p-1 rounded"
-                      >
-                        <option value="gm">gm</option>
-                        <option value="kg">kg</option>
-                      </select>
-                    </div>
+                    <input
+                      type="number"
+                      value={formData.offerPrice}
+                      onChange={(e) => setFormData({ ...formData, offerPrice: e.target.value })}
+                      className="border p-1 rounded w-full max-w-[120px] md:max-w-none"
+                    />
                   ) : (
-                    <span>{formatVND(product.offerPrice)} / {product.unit || 'gm'}</span>
+                    <span>{formatVND(product.offerPrice)}</span>
+                  )}
+                </td>
+
+                {/* Unit */}
+                <td className="px-3 md:px-4 py-3 hidden sm:table-cell">
+                  {editingProduct === product._id ? (
+                    <select
+                      value={formData.unit}
+                      onChange={(e) => setFormData({ ...formData, unit: e.target.value })}
+                      className="border p-1 rounded"
+                    >
+                      <option value="gm">gm</option>
+                      <option value="kg">kg</option>
+                      <option value="liter">liter</option>
+                    </select>
+                  ) : (
+                    <span>{product.unit || 'gm'}</span>
                   )}
                 </td>
 

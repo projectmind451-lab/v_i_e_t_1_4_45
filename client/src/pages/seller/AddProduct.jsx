@@ -310,6 +310,7 @@ const AddProduct = () => {
             >
               <option value="gm">gm</option>
               <option value="kg">kg</option>
+              <option value="liter">liter</option>
             </select>
           </div>
         </div>
